@@ -53,7 +53,7 @@ Transparent PNG frames are rendered at the composition's frame rate and bundled 
 
 ## Checks and current limits
 
-Run `npm test` for the model, grouping, tweening, path morph, import validation, input ownership, audio clock, mesh, shape combiner, and pointer-coordinate tests. Forty-six tests pass, including serialization and evaluation of 100 additional objects with 600 keyframes. The original four code audits and the requested GUI review were completed, with actionable findings addressed.
+Run `npm test` for the model, grouping, tweening, path morph, import validation, input ownership, audio clock, mesh, shape combiner, and pointer-coordinate tests. Sixty-eight tests pass, including serialization and evaluation of 100 additional objects with 600 keyframes. The original four code audits and the requested GUI review were completed, with actionable findings addressed.
 
 Browser checks covered drawing, property edits, key creation, scrubbing, grouping/ungrouping, audio import and trim, autosave recovery, and MP4 export. The independently inspected sample contains 144 H.264 frames at 24 FPS, 1280 × 720, with a six-second AAC audio track. Its sound is a generated test tone, not a microphone recording.
 
@@ -79,9 +79,18 @@ Sequence / + time copies enabled tracks of selected layers (including grouped ch
 
 The requested iPad-app comparison and ASD/ND efficiency audits informed finger-sized graph targets, horizontally scrollable small-screen graphs, readable layer identity, visible unit labels, live reversible adjustment, familiar easing labels and explicit paste consequences. There are no adaptive/personalized modes. Physical iPad/Pencil task testing is still needed to evaluate usability parity.
 
-## Next phase
+## Sequencer and studio update
 
-- Add an option to turn off scaffold mode without introducing another popup.
-- Replace the separate shape-picker dialog with Illustrator-style shape selection in the existing tool area or editing dock.
-- Add bevel controls for individual shape/path points, with an adjustable bevel amount per point.
-- Allow an imported image to be used as a shape texture, with selectable cover/fit behaviour and controls for its scale and position within the shape.
+Playback, sequencer editing, and keyframe actions have separate compact rows. Select/move blocks keeps selection separate from scrubbing; empty lanes pan, and two-finger pinch zooms around the fingers' midpoint. A visible block selector reaches very short clips. Animation and recording blocks support split, trim, move, copy/paste and delete. Audio splits retain their source offsets. References support trimming and duplication.
+
+Double-tap an animation block, or choose Edit tracks, to open its parameter sublanes and graph. Block tracks are sparse bounded overrides: graph and canvas edits affect that block while surrounding animation is preserved. Path and mesh tracks use tween-progress graphs. Mesh subdivision updates base, block and cut keys together. Changes remain undoable.
+
+Sequence / + time defines a bounded playback loop in seconds, frames or optional bars. Editable tempo and beats per bar define bar measurement without retiming existing keys. Frame steps, snap feedback and the saved/export-ready status share the playback row. The duration limit is 600 seconds.
+
+Movement reference provides a basic rotatable jointed puppet for Walk, Run, Sprint, Hop and Slide. Set its loop length and bake transparent 400 × 400 PNG frames into a locked reference layer below artwork. Reference opacity and export inclusion are visible in Properties; references are excluded from exports by default. Baking is limited to 10 seconds and 600 frames. The procedural pose guide follows the drawn contact/down/passing/up phases in [Adobe's walk-cycle guide](https://www.adobe.com/creativecloud/animation/discover/animation-walk-cycle.html). It is a simple drawing aid, not motion capture.
+
+Onion skin shows one to three preceding/following artwork frames with adjustable opacity. Ghosts disappear during playback and are excluded from all exports. Neutral charcoal and grey controls, reduced padding, stable mode labels and 44px touch targets keep editing actions visible.
+
+Scaffold toggles handles directly without opening a dialog. The Shapes icon reveals an inline horizontal shape strip. Direct-edit points have independent round/bevel radii. Shape textures import PNG/JPEG/WebP/GIF raster images and offer Cover, Fit, Stretch, Tile, scale and X/Y offset. Imports are embedded as PNG images up to 2048 pixels; texture and bevel output is shared by SVG, PNG and video. Texture previews are reversible and Apply commits one undo step.
+
+The regression suite includes bounded graph edits, frame-identical splits, sparse long-composition trims, block pastes, audio schedules, rotating periodic puppet poses, PNG reference serialization, and sequencer pinch anchoring. Local browser checks cover block graphs, loop-unit conversion, reference baking, and transparent PNG export. Physical iPad multi-touch remains unverified.

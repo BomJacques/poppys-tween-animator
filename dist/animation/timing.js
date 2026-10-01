@@ -1,0 +1,8 @@
+export const frameTime=(p,t)=>Math.round(t*p.fps)/p.fps;
+export function timing(p){return {bpm:120,beatsPerBar:4,start:0,end:p.duration,...p.playback};}
+export function toSeconds(p,value,unit){return unit==='frames'?value/p.fps:unit==='bars'?value*60/timing(p).bpm*timing(p).beatsPerBar:value;}
+export function fromSeconds(p,value,unit){return unit==='frames'?value*p.fps:unit==='bars'?value*timing(p).bpm/60/timing(p).beatsPerBar:value;}
+export function loopRange(p){const t=timing(p),end=Math.min(p.duration,Math.max(1/p.fps,frameTime(p,t.end))),start=Math.min(end-1/p.fps,Math.max(0,frameTime(p,t.start)));return {start,end,bpm:t.bpm,beatsPerBar:t.beatsPerBar};}
+export function setLoop(p,start,length,unit,bpm=120,beatsPerBar=4){if(!Number.isFinite(bpm)||bpm<20||bpm>300||!Number.isInteger(beatsPerBar)||beatsPerBar<1||beatsPerBar>16)throw Error('Tempo must be 20–300 BPM; beats per bar 1–16.');const clock={...p,playback:{...timing(p),bpm,beatsPerBar}},first=frameTime(p,toSeconds(clock,start,unit)),duration=Math.max(1/p.fps,frameTime(p,toSeconds(clock,length,unit)));if(!Number.isFinite(first)||!Number.isFinite(duration)||first<0||length<=0||first+duration>p.duration+.00001)throw Error('The playback loop must fit inside the composition. Add time first if needed.');p.playback={start:first,end:first+duration,bpm,beatsPerBar};return p.playback;}
+export function normalizeTiming(p){if(p.playback)p.playback={...loopRange(p)};return p;}
+export function formatTime(p,t,unit='seconds'){return unit==='frames'?Math.round(t*p.fps)+'f':unit==='bars'?Number(fromSeconds(p,t,'bars').toFixed(3))+' bars':Number(t.toFixed(3))+'s';}
