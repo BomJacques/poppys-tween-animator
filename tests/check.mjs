@@ -1,0 +1,4 @@
+import fs from 'node:fs';import path from 'node:path';import {spawnSync} from 'node:child_process';
+const walk=dir=>fs.readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(path.join(dir,e.name)):[path.join(dir,e.name)]);const files=walk('dist');
+for(const file of files.filter(f=>f.endsWith('.js'))){const r=spawnSync(process.execPath,['--check',file],{encoding:'utf8'});if(r.status)throw Error(r.stderr);const source=fs.readFileSync(file,'utf8');for(const [,ref] of source.matchAll(/(?:from\s+|import\s*\()\s*['"](\.[^'"]+)['"]/g)){if(!fs.existsSync(path.resolve(path.dirname(file),ref)))throw Error(`Missing module ${ref} from ${file}`);}}
+const sw=fs.readFileSync('dist/sw.js','utf8');for(const [,ref] of sw.matchAll(/'\.\/([^']*)'/g)){if(ref&&!fs.existsSync(path.join('dist',ref)))throw Error(`Missing offline asset ${ref}`);}console.log(`${files.length} static files checked: syntax, module links, offline assets.`);
