@@ -84,3 +84,4 @@ The requested iPad-app comparison and ASD/ND efficiency audits informed finger-s
 - Add an option to turn off scaffold mode without introducing another popup.
 - Replace the separate shape-picker dialog with Illustrator-style shape selection in the existing tool area or editing dock.
 - Add bevel controls for individual shape/path points, with an adjustable bevel amount per point.
+- Allow an imported image to be used as a shape texture, with selectable cover/fit behaviour and controls for its scale and position within the shape.
