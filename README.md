@@ -53,7 +53,7 @@ Transparent PNG frames are rendered at the composition's frame rate and bundled 
 
 ## Checks and current limits
 
-Run `npm test` for the model, grouping, tweening, path morph, import validation, input ownership, audio clock, mesh, shape combiner, and pointer-coordinate tests. Thirty-eight tests pass, including serialization and evaluation of 100 additional objects with 600 keyframes. The original four code audits and the requested GUI review were completed, with actionable findings addressed.
+Run `npm test` for the model, grouping, tweening, path morph, import validation, input ownership, audio clock, mesh, shape combiner, and pointer-coordinate tests. Forty-six tests pass, including serialization and evaluation of 100 additional objects with 600 keyframes. The original four code audits and the requested GUI review were completed, with actionable findings addressed.
 
 Browser checks covered drawing, property edits, key creation, scrubbing, grouping/ungrouping, audio import and trim, autosave recovery, and MP4 export. The independently inspected sample contains 144 H.264 frames at 24 FPS, 1280 × 720, with a six-second AAC audio track. Its sound is a generated test tone, not a microphone recording.
 
@@ -68,3 +68,13 @@ Ungrouping an animated group or a group with opacity below 100% is blocked, with
 `document/` holds the serializable model and history; `scene/` handles hierarchical transforms; `animation/` evaluates tracks; `renderer/` draws SVG; `input/` owns stage gestures; `timeline/` manages layer/key gestures; `audio/` handles recording and clocks; `export/` renders and encodes; `persistence/` stores projects and imports SVG; `ui/` contains the inspector and demo.
 
 Third-party runtime code is vendored `mp4-muxer`, `webm-muxer`, and [polygon-clipping](https://github.com/mfogel/polygon-clipping), with licenses in `dist/vendor/`. The pinned muxers are isolated behind the export module. Polygon-clipping supplies local Boolean geometry operations; its upstream bundled factory is adapted to an ES module.
+
+## Layer effects, graphs and sequences
+
+Layer in the editing dock (or ⋯ beside a layer) opens drop shadow controls: enable, horizontal/vertical offset in pixels, blur, opacity, and colour. Sliders and exact values preview the effect; Apply commits one undo step and Cancel restores the original. Animate shadow enables independent effect tracks. SVG, video, and transparent PNG exports use the same alpha-based shadow renderer.
+
+Graph opens an editor for the selected layer. Numeric tracks have time/value graphs and draggable keys; colour, path and mesh tracks show outgoing tween progress. Drag the easing handles or enter exact Bézier control points. Keys stay frame-aligned and cannot cross neighbouring keys. Custom curves survive save, copy/paste, sequence repetition and export. This is a value/progress graph editor, not a separate After Effects speed graph.
+
+Sequence / + time copies enabled tracks of selected layers (including grouped children) or all layers for the full composition duration. Paste repeats them on their original layers at the end or at the playhead, extends time when necessary, and shows overlapping-key replacements before pasting. Audio and static layer styling are not copied. + Add seconds extends duration without stretching keys or audio. Seconds/Frames changes timeline and graph measurements. Maximum duration remains 600 seconds.
+
+The requested iPad-app comparison and ASD/ND efficiency audits informed finger-sized graph targets, horizontally scrollable small-screen graphs, readable layer identity, visible unit labels, live reversible adjustment, familiar easing labels and explicit paste consequences. There are no adaptive/personalized modes. Physical iPad/Pencil task testing is still needed to evaluate usability parity.
