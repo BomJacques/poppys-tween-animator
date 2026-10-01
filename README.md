@@ -78,3 +78,8 @@ Graph opens an editor for the selected layer. Numeric tracks have time/value gra
 Sequence / + time copies enabled tracks of selected layers (including grouped children) or all layers for the full composition duration. Paste repeats them on their original layers at the end or at the playhead, extends time when necessary, and shows overlapping-key replacements before pasting. Audio and static layer styling are not copied. + Add seconds extends duration without stretching keys or audio. Seconds/Frames changes timeline and graph measurements. Maximum duration remains 600 seconds.
 
 The requested iPad-app comparison and ASD/ND efficiency audits informed finger-sized graph targets, horizontally scrollable small-screen graphs, readable layer identity, visible unit labels, live reversible adjustment, familiar easing labels and explicit paste consequences. There are no adaptive/personalized modes. Physical iPad/Pencil task testing is still needed to evaluate usability parity.
+
+## Next phase
+
+- Add an option to turn off scaffold mode without introducing another popup.
+- Replace the separate shape-picker dialog with Illustrator-style shape selection in the existing tool area or editing dock.
