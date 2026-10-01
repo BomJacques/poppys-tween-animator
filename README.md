@@ -18,8 +18,8 @@ The included `.github/workflows/pages.yml` runs the checks and deploys `dist/` w
 
 ## Make an animation
 
-1. Use Project → New project, or start with the test composition.
-2. Choose a drawing tool and draw on the stage. For paths, tap to place a node and drag to give it Bézier handles; tap **Finish path** when done.
+1. Every launch starts on a blank project. Use Project → Open local project to reopen saved work, or load the test composition explicitly.
+2. Open Shapes to choose a rectangle, ellipse, triangle, polygon, star, or line. Drag from your finger position, or tap empty canvas to place a standard shape. For paths, tap to place a node and drag to give it Bézier handles; tap **Finish path** when done.
 3. Choose Select to move artwork. Selection handles resize, rotate, and adjust its pivot. Two fingers pan and zoom the viewport.
 4. Toggle Multi-select, select two sibling layers, and tap Group. Use the layer list to select individual children of a group.
 5. Tap a property’s diamond to enable its animation. Scrub to a new time and change that property to create another key. Add Keyframe inserts the existing animated properties, or the basic transforms when none are enabled.
@@ -27,7 +27,19 @@ The included `.github/workflows/pages.yml` runs the checks and deploys `dist/` w
 7. Record audio or import a file. Trim & volume changes its source trim, timeline offset, volume, and mute state. Drag its waveform to reposition it.
 8. Preview, then Export video. Download the completed video. Export Project file creates a portable `.poppy` backup with embedded audio.
 
-Local saves and debounced autosaves use IndexedDB. Refresh recovers the last project. Audio blobs remain available for undo and saved projects. Browser storage can be cleared by the browser or OS, so keep portable backups for important work.
+Local saves and autosaves use IndexedDB. Refresh starts blank; saved projects remain under Project → Open local project. Audio blobs remain available for undo and saved projects. Browser storage can be cleared by the browser or OS, so keep portable backups for important work.
+
+## Shape editing, shading, and clear controls
+
+The canvas dock shows the current mode and the available editing actions. Direct select reaches shapes inside groups and exposes editable path points. Edit points converts rectangles and ellipses to paths, including rounded corners and cubic ellipse curves. Tap a square point to select it and reveal its curve handles. Zoom in for dense paths, or navigate with the previous/next point controls. Midpoint insertion preserves the curve; Smooth, Corner, and Delete point edit the selected point. Text stays editable through its text controls.
+
+Multi-select two or more closed sibling shapes to use Unite, Subtract front, Keep overlap, or Exclude overlap. Subtract front cuts the shapes in front out of the back shape. Compound path retains outlines with even-odd filling. Join paths connects the nearest ends of two simple open paths. Combining evaluates the current frame, approximates curves with editable polygon points, replaces the source shapes, and uses the front shape's appearance (the back shape for Subtract). Undo restores the originals. Individual source animation tracks are not transferred.
+
+Mesh shading uses a saved colour grid clipped to the shape. Select Mesh and hold a point for 550 ms to open its colour picker, or tap a point and use Point colour in the canvas dock. Moving more than 8 screen pixels cancels the hold. More rows/columns refine the grid. Subdivide cell splits the cell beside the selected point; Tap to subdivide inserts a row and column through the cell at your tap, preserving existing points and colours. The limit is 7 × 7 points. Mesh colour/geometry is static and follows the object's animation; it is included in video and SVG export as a derived PNG fill. This is Poppy's mesh format, with no Illustrator mesh-file import. Its shading image is capped at 640 pixels on its longer edge.
+
+A quick two-finger canvas tap undoes the last edit; finger movement keeps pinch and pan gestures separate. Normal dragging follows the pointer one-to-one. A small movement threshold avoids accidental moves on a tap. Snapping starts off; Precision deliberately reduces movement to 35% for fine adjustment. Grab offsets are retained for path, mesh, and resize handles. The fixed-height editing dock keeps canvas coordinates stable when selection changes.
+
+Dark mode is the default, with a persistent light/dark toggle. Help includes the five animation steps and guidance for each editing mode. A GUI accessibility review prompted visible contextual actions, plain mode labels, fewer overlapping handles, accurate toggle states, and 44px touch controls. These are general usability improvements; physical-user accessibility validation remains to be done.
 
 ## Export behavior
 
@@ -37,13 +49,13 @@ Browsers without supported WebCodecs combinations use a clearly labeled real-tim
 
 ## Checks and current limits
 
-Run `npm test` for the model, grouping, tweening, path morph, import validation, input ownership, and audio clock tests. Thirteen tests passed at delivery, including serialization and evaluation of 100 additional objects with 600 keyframes. All four requested code audits were run and their actionable findings addressed.
+Run `npm test` for the model, grouping, tweening, path morph, import validation, input ownership, audio clock, mesh, shape combiner, and pointer-coordinate tests. Twenty-seven tests pass, including serialization and evaluation of 100 additional objects with 600 keyframes. The original four code audits and the requested GUI review were completed, with actionable findings addressed.
 
 Browser checks covered drawing, property edits, key creation, scrubbing, grouping/ungrouping, audio import and trim, autosave recovery, and MP4 export. The independently inspected sample contains 144 H.264 frames at 24 FPS, 1280 × 720, with a six-second AAC audio track. Its sound is a generated test tone, not a microphone recording.
 
 Physical iPad/Pencil gestures, Safari-specific codecs, actual microphone permission/recording, and several-minute audio performance remain device validation work; they are not claimed as tested. The compatibility exporter was implemented but not exercised on a browser without WebCodecs.
 
-SVG import supports basic geometry, text, groups, colors, and matrix transforms. Images, filters, masks, gradients, external assets, scripts, and full SVG fidelity are outside this version. Imported raw SVG paths preserve their geometry but do not expose their nodes for editing. Native paths support matching-node-and-handle morphs; incompatible morphs hold their earlier shape.
+SVG import supports basic geometry, text, groups, colors, and matrix transforms. Images, filters, masks, gradients, external assets, scripts, and full SVG fidelity are outside this version. Direct select converts raw SVG commands, including arcs, to editable cubic points while retaining compound subpaths. Native paths support matching-node-and-handle morphs; incompatible morphs hold their earlier shape.
 
 Ungrouping an animated group or a group with opacity below 100% is blocked, with an explanation, to preserve descendant motion and compositing. Set opacity to 100% and remove group tracks first. Nested child transforms are preserved through matrix prefixes. Large timelines scroll; changing project structure still rebuilds their rows, while key drags and playhead movement update positions directly. Long/high-resolution exports hold the output in memory.
 
@@ -51,4 +63,4 @@ Ungrouping an animated group or a group with opacity below 100% is blocked, with
 
 `document/` holds the serializable model and history; `scene/` handles hierarchical transforms; `animation/` evaluates tracks; `renderer/` draws SVG; `input/` owns stage gestures; `timeline/` manages layer/key gestures; `audio/` handles recording and clocks; `export/` renders and encodes; `persistence/` stores projects and imports SVG; `ui/` contains the inspector and demo.
 
-The only third-party runtime code is vendored `mp4-muxer` and `webm-muxer`, with licenses in `dist/vendor/`. These pinned small muxers are isolated behind the export module so they can be replaced independently.
+Third-party runtime code is vendored `mp4-muxer`, `webm-muxer`, and [polygon-clipping](https://github.com/mfogel/polygon-clipping), with licenses in `dist/vendor/`. The pinned muxers are isolated behind the export module. Polygon-clipping supplies local Boolean geometry operations; its upstream bundled factory is adapted to an ES module.
