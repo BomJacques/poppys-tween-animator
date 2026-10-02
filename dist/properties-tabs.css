@@ -2,3 +2,18 @@
 
 /* Native selects must shrink inside both two-column property grids. */
 .properties-tabpanel,.properties-tabpanel .prop-section,.properties-tabpanel label,.properties-tabpanel .prop-field{min-width:0;max-width:100%}.properties-tabpanel .prop-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.properties-tabpanel .prop-grid>*{min-width:0}.properties-tabpanel input:not([type=checkbox]),.properties-tabpanel select,.properties-tabpanel textarea{width:100%;min-width:0;max-width:100%;box-sizing:border-box}.properties-tabpanel .editor-buttons{grid-template-columns:repeat(2,minmax(0,1fr))}.properties-tabpanel .editor-buttons>*{min-width:0}.property-track-item>span{min-width:0;overflow-wrap:anywhere}.properties-tabpanel .prop-title{overflow-wrap:anywhere}
+
+/* Compact visible key marks inside full-size touch targets. */
+.properties-tabpanel .key-button{--key-fill:#f2f2f2;--key-edge:#787878;--key-ink:#454545;border:0!important;border-radius:5px!important;background:radial-gradient(circle at center,var(--key-fill) 0 10px,var(--key-edge) 10px 12px,transparent 12.5px)!important;color:var(--key-ink)!important;font-size:16px;width:44px;height:44px;min-width:44px;min-height:44px;box-shadow:none}
+.properties-tabpanel .key-button.enabled{--key-fill:#dce7f5;--key-edge:#466998;--key-ink:#264d82}
+.properties-tabpanel .key-button.at-key{--key-fill:#245ca9;--key-edge:#245ca9;--key-ink:#fff}
+[data-theme=dark] .properties-tabpanel .key-button{--key-fill:#303030;--key-edge:#999;--key-ink:#eee}
+[data-theme=dark] .properties-tabpanel .key-button.enabled{--key-fill:#263b53;--key-edge:#8eb2e0;--key-ink:#c5ddff}
+[data-theme=dark] .properties-tabpanel .key-button.at-key{--key-fill:#b4d2fa;--key-edge:#b4d2fa;--key-ink:#183451}
+.properties-tabpanel .key-button:hover{--key-edge:currentColor}
+.properties-tabpanel .key-button:focus-visible{outline:2px solid var(--key-edge);outline-offset:-2px}
+.properties-tabpanel .prop-field.keyable input{padding-right:44px}
+.properties-tabpanel .key-button:disabled{opacity:.45}
+.property-track-item{min-height:48px;padding-block:2px}
+.properties-tabpanel .prop-title,#properties>section>.prop-title{margin-bottom:6px}
+.properties-tabpanel .prop-section{margin-bottom:14px;padding-bottom:10px}
