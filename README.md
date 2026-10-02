@@ -29,6 +29,8 @@ The included `.github/workflows/pages.yml` runs the checks and deploys `dist/` w
 
 Local saves and autosaves use IndexedDB. Refresh starts blank; saved projects remain under Project → Open local project. Audio blobs remain available for undo and saved projects. Browser storage can be cleared by the browser or OS, so keep portable backups for important work.
 
+Selecting an animated layer reveals its parameter lanes immediately. Base animation and relevant block tracks show their own keys and counts together, including edits beyond an existing block. The compact status line shows Auto Key, the current frame, and how many keys exist at that frame. Move the playhead before making the next pose: dragging again at the same time updates that frame's keys. Auto Key records poses at the playhead; it does not capture a continuous drag over time.
+
 ## Workspace modes and Settings
 
 **Settings** in the top bar contains **Scaffold** and the Properties panel preference. Scaffold **on** gives a guided workspace: Shapes opens a chooser, Object options contains the selected artwork's editing actions, and Canvas options, Sequencer options and Keyframe options expose their respective controls. Scaffold **off** keeps detailed controls visible in compact rows; Shapes opens an inline strip. Both modes provide every tool, animation feature, selection outline and editing handle. Switching modes changes the presentation, not the artwork.
