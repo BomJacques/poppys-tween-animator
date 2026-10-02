@@ -64,10 +64,11 @@ test('raster import resamples to at most 2048 and revokes the temporary URL',asy
  }finally{globalThis.Image=saved.Image;globalThis.document=saved.document;URL.createObjectURL=saved.create;URL.revokeObjectURL=saved.revoke;}
 });
 
-test('Shapes opens inline without changing tools or dialogs, and scaffold hides all handles',()=>{
- let renders=0;const a={tool:'select',render(){renders++;},stage:{finishPath(){}},dialog(){throw Error('No shape dialog');}};
+test('detailed Shapes stays inline and scaffold preference never hides mesh editing handles',()=>{
+ let renders=0;const a={workspaceInitialized:true,workspaceGuided:false,propertiesOpen:false,tool:'select',render(){renders++;},stage:{finishPath(){}},dialog(){throw Error('Detailed shapes should be inline');}};
  showShapes(a);assert.equal(a.shapesOpen,true);assert.equal(a.tool,'select');chooseShape(a,'star');assert.equal(a.tool,'star');assert.equal(a.shapesOpen,true);assert.equal(renders,2);
- const stage={a:{showScaffold:false,tool:'direct',selected:['test']},overlay:{innerHTML:'old handles'}};StageInput.prototype.handles.call(stage);assert.equal(stage.overlay.innerHTML,'');assert.equal(stage.a.tool,'direct');
+ const doc=project(),n=object('rectangle');n.mesh={rows:2,cols:2,bounds:{x:0,y:0,width:n.width,height:n.height},points:[{x:0,y:0},{x:n.width,y:0},{x:0,y:n.height},{x:n.width,y:n.height}].map(p=>({...p,color:'#aaaaaa'}))};doc.layers=[n];
+ const stage={a:{doc,time:0,showScaffold:false,workspaceGuided:false,tool:'mesh',selected:[n.id]},view:{zoom:1},fitScale:1,overlay:{innerHTML:''}};StageInput.prototype.handles.call(stage);assert.match(stage.overlay.innerHTML,/data-mesh="0"/);const detailed=stage.overlay.innerHTML;stage.a.workspaceGuided=true;StageInput.prototype.handles.call(stage);assert.equal(stage.overlay.innerHTML,detailed);
  const previous=globalThis.document,el={contains(){return false;},innerHTML:''};globalThis.document={querySelector(){return el;},activeElement:null};
- try{renderContext({...a,doc:project(),selected:[],showScaffold:false});assert.match(el.innerHTML,/shape-dock/);assert.match(el.innerHTML,/data-shape="star" aria-pressed="true"/);assert.match(el.innerHTML,/Scaffold off/);}finally{globalThis.document=previous;}
+ try{renderContext({...a,doc:project(),selected:[]});assert.match(el.innerHTML,/shape-dock/);assert.match(el.innerHTML,/data-shape="star" aria-pressed="true"/);assert.doesNotMatch(el.innerHTML,/Scaffold off|data-scaffold/);}finally{globalThis.document=previous;}
 });
