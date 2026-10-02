@@ -35,3 +35,7 @@ dialog.graph-dialog.track-editor.track-editor-folded[open]{height:auto}
 [data-theme=light] dialog.graph-dialog.track-editor[open]{background:#fff;color:#242424;border-color:#c8c8c8}
 [data-theme=dark] .track-editor .value-graph,[data-theme=dark] .track-editor .ease-graph{background:#1c1c1c;color:#eee}
 [data-theme=light] .track-editor .value-graph,[data-theme=light] .track-editor .ease-graph{background:#f7f7f7;color:#242424}
+
+.track-editor .graph-top [data-graph-view]{width:120px;flex:0 0 120px;font-size:12px}.track-editor .graph-top [data-graph-interpolation]{padding-inline:8px}.track-editor .graph-unit-legend{font-size:12px;fill:currentColor}.track-editor .value-tangent circle.selected{fill:#f5cf64;stroke:#5d4b18;stroke-width:1.5}.track-editor .value-graph .curve-arm{stroke:#d3b653;stroke-width:1.5}.track-editor .value-graph .graph-point{cursor:grab}.track-editor .value-graph .graph-point:focus-visible{outline:none}.track-editor .value-graph .graph-point:focus-visible circle:last-child{stroke:#70bfff;stroke-width:3}
+
+.track-editor .graph-top>label{order:-1}

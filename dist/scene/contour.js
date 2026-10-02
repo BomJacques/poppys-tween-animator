@@ -1,9 +1,10 @@
+import {meshBoundaryPoint} from './mesh-coverage.js';
 import {evaluated} from '../animation/evaluate.js';
 import {localBounds} from './matrix.js';
 import {createMesh,meshKnots} from './mesh.js';
 import {shapeRegion} from './mesh-region.js';
 
-export function constrainMeshPoint(n,time,p,mesh){return shapeRegion(evaluated(n,time)).constrain(p,mesh?.manualBounds||mesh?.bounds);}
+export function constrainMeshPoint(n,time,p,mesh,index){const v=evaluated(n,time);if(mesh?.contour&&!mesh.manualBounds&&Number.isInteger(index)){const row=Math.floor(index/mesh.cols),col=index%mesh.cols;if(!row||!col||row===mesh.rows-1||col===mesh.cols-1)return meshBoundaryPoint(v,p,mesh.points[index]);}return shapeRegion(v).constrain(p,mesh?.manualBounds||mesh?.bounds);}
 export function constrainMesh(n,time,mesh){const region=shapeRegion(evaluated(n,time));return {...mesh,points:mesh.points.map(p=>({...p,...region.constrain(p,mesh.manualBounds||mesh.bounds)}))};}
 
 export function manualMesh(n,time,start,end,previous){

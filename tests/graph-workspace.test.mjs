@@ -68,7 +68,7 @@ test('graph drags cannot join an active stage or timeline gesture and flush pend
 test('round tween handles support a keyboard adjustment on the selected outgoing segment',()=>{
  const {a,n,d}=fixture();showGraph(a);const curve=d.querySelector('.ease-graph');assert.match(curve.innerHTML,/role="button" aria-label="Start tween handle/);
  let prevented=false;curve.onkeydown({key:'ArrowRight',preventDefault(){prevented=true;},target:{closest:s=>s==='[data-curve-handle]'?{dataset:{curveHandle:'0'}}:null}});
- assert.equal(prevented,true);assert.deepEqual(n.tracks.x[0].bezier,[.02,0,1,1]);assert.equal(n.tracks.x[1].bezier,undefined);assert.equal(a.history.undoStack.length,1);
+ assert.equal(prevented,true);assert.deepEqual(n.tracks.x[0].bezier,[1/3+.02,1/3,2/3,2/3]);assert.equal(n.tracks.x[1].bezier,undefined);assert.equal(a.history.undoStack.length,1);
 });
 test('folding leaves the transport accessible and resize gestures respect their owner and iPad bounds',()=>{
  const {a,d}=fixture();showGraph(a);const fold=d.querySelector('[data-graph-fold]'),resize=d.querySelector('[data-graph-resize]');

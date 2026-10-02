@@ -1,0 +1,7 @@
+.timeline-command-bar{display:flex;align-items:stretch;min-width:0;flex-shrink:0;border-bottom:1px solid var(--line);min-height:44px;background:var(--panel)}
+.timeline-command-tabs{display:flex;flex-shrink:0;align-items:center;border-right:1px solid var(--line);gap:1px;padding:0 3px}
+.timeline-command-tabs button{min-width:44px;min-height:44px;padding:0 7px;font-size:12px;border-radius:3px;border:1px solid transparent;font-weight:600}
+.timeline-command-tabs button[aria-selected=true]{color:var(--control-blue-ink,#dfe8f2);background:var(--control-blue-bg,#34485f);border-color:var(--control-blue-edge,#6786ac)}
+.timeline-command-tabs button:focus-visible{outline:2px solid var(--control-blue-edge,#6786ac);outline-offset:-2px}
+.timeline-command-bar>.block-toolbar,.timeline-command-bar>.timeline-toolbar{flex:1;min-width:0;border:0;height:44px;min-height:44px;overflow-x:auto;flex-wrap:nowrap;gap:3px;scrollbar-width:thin;padding:0 4px}
+.timeline-command-bar>[hidden]{display:none!important}.timeline-command-bar>header>strong{display:none}.timeline-command-bar>header>button,.timeline-command-bar>header>select,.timeline-command-bar>header>output{flex-shrink:0}

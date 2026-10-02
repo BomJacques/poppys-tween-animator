@@ -20,8 +20,13 @@ export function bindControlCopies(a,el){
  for(const event of ['input','change'])el.addEventListener(event,e=>{const copy=e.target.closest('input[data-workspace-control],select[data-workspace-control]');if(!copy)return;const source=document.getElementById(copy.dataset.workspaceControl);if(!source)return;source.value=copy.value;source.dispatchEvent(new Event(event,{bubbles:true}));syncControlCopies(el,event==='input'?copy:null);queueMicrotask(sync);});
  if(typeof MutationObserver!=='undefined'){let queued=false;const observer=new MutationObserver(()=>{if(queued)return;queued=true;queueMicrotask(()=>{queued=false;sync();});});for(const copy of el.querySelectorAll('[data-workspace-control]')){const source=document.getElementById(copy.dataset.workspaceControl);if(source)observer.observe(source,{attributes:true,attributeFilter:['disabled','class','aria-pressed','aria-expanded','aria-label','title'],childList:true,subtree:true});}el.closest('dialog')?.addEventListener('close',()=>observer.disconnect(),{once:true});}
 }
+export const workspaceToolGroups={
+ canvas:[['Selection & movement',['multi','precision','snap']],['Drawing & transforms',['uniform-size']],['Canvas view',['fit','zoom-out','zoom-in']],['Onion skin',['onion-skin','onion-count','onion-opacity']]],
+ blocks:[['Timing',['sequence-tempo']],['Gesture mode',['timeline-touch-mode']],['Active block',['block-selector','edit-block-tracks']],['Block editing',['split-block','trim-block','remove-block']],['Clipboard',['copy-block','paste-block']]],
+ keys:[['Timing',['sequence-editor','timeline-units','snap-frames']],['Record & create',['add-key','next-pose','motion-presets']],['Key navigation',['previous-key','next-key']],['Curve editing',['graph-editor','edit-key','easing']],['Clipboard',['copy-keys','paste-keys','delete-keys']],['Timeline view',['timeline-fit','timeline-focus','timeline-minus','timeline-plus']]]
+};
 export function showWorkspaceTools(a,kind='canvas'){
- const groups=kind==='blocks'?[['Sequencer tools',['sequence-tempo','timeline-touch-mode','block-selector','edit-block-tracks','split-block','copy-block','paste-block','trim-block','remove-block']]]:kind==='keys'?[['Keyframe tools',['motion-presets','snap-frames','add-key','sequence-editor','timeline-units','graph-editor','edit-key','copy-keys','paste-keys','delete-keys','easing','timeline-minus','timeline-plus']]]:[['Selection and movement',['uniform-size','multi','precision','snap','onion-skin','fit','zoom-out','zoom-in']],['Onion skin',['onion-count','onion-opacity']]];
+ const groups=workspaceToolGroups[kind]||workspaceToolGroups.canvas;
  const d=a.dialog(kind==='blocks'?'Sequencer options':kind==='keys'?'Keyframe options':'Canvas options',groups.map(([title,ids])=>`<section><h3>${title}</h3><div class="workspace-option-grid">${controlCopies(ids)}</div></section>`).join(''));d.classList.add('workspace-options-dialog');bindControlCopies(a,d);
 }
 export function bindWorkspace(a){
