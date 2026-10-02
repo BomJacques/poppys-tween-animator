@@ -1,0 +1,12 @@
+import {trimBlock} from '../animation/blocks.js';
+import {trimAudio} from '../audio/clips.js';
+import {fromSeconds,toSeconds,formatTime} from '../animation/timing.js';
+import {escape} from '../renderer/svg.js';
+export function showBlockRange(a,timeline){
+ const selection=timeline.selectedBlock();if(!selection)return a.toast('Select a sequence block first.');
+ const {b}=selection,unit=timeline.measurement,label=unit==='frames'?'frames':unit==='bars'?'bars':'seconds',step=unit==='frames'?1:fromSeconds(a.doc,1/a.doc.fps,unit);
+ const d=a.dialog('Trim block range',`<p><strong>${escape(b.name)}</strong> · ${formatTime(a.doc,b.start,unit)}–${formatTime(a.doc,b.end,unit)}</p><p>Shorten the active range of this block. ${selection.audio?'Audio outside the new range stops playing; the original recording is kept.':b.kind==='reference'?'Reference frames outside the new range are hidden.':'Animation removed from the start holds its preceding pose; the removed tail holds the last retained pose. Saved keys stay available.'} Other blocks keep their timing.</p><form><div class="dialog-grid"><label>Start (${label})<input name="start" type="number" step="${step}" min="${fromSeconds(a.doc,b.start,unit)}" max="${fromSeconds(a.doc,b.end,unit)}" value="${fromSeconds(a.doc,b.start,unit)}" required></label><label>End (${label})<input name="end" type="number" step="${step}" min="${fromSeconds(a.doc,b.start,unit)}" max="${fromSeconds(a.doc,b.end,unit)}" value="${fromSeconds(a.doc,b.end,unit)}" required></label></div><p class="subtle">Keep at least one frame. Use Split at playhead to cut a block into two pieces.</p><div class="dialog-actions"><button type="button" data-close>Cancel</button><button type="submit" class="primary">Apply trim</button></div></form>`,(form,dialog)=>{
+  const start=timeline.frame(toSeconds(a.doc,Number(form.get('start')),unit)),end=timeline.frame(toSeconds(a.doc,Number(form.get('end')),unit));if(![start,end].every(Number.isFinite)||start<b.start-.00001||end>b.end+.00001||end<=start)throw Error('Choose a shorter range inside this block, with at least one frame.');
+  a.mutate('Trim sequence block',()=>{const current=timeline.selectedBlock();if(!current||current.b.id!==b.id)throw Error('Select this block again before trimming.');if(current.audio)trimAudio(a.doc.audio,b.id,start,end);else trimBlock(current.n,a.doc,b.id,start,end);});dialog.close();a.toast('Block range trimmed. Undo restores its previous range.');
+ });return d;
+}

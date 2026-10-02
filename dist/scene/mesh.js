@@ -2,9 +2,25 @@
 export const colorRGB=c=>/^#[0-9a-f]{6}$/i.test(c)?[1,3,5].map(i=>parseInt(c.slice(i,i+2),16)):/^#[0-9a-f]{3}$/i.test(c)?[...c.slice(1)].map(x=>parseInt(x+x,16)):[103,96,232];
 export function createMesh(b,color='#6760e8',rows=3,cols=3){if(b.width<=0||b.height<=0)throw Error('Mesh shading needs a shape with width and height.');color='#'+colorRGB(color).map(v=>v.toString(16).padStart(2,'0')).join('');return {rows,cols,points:Array.from({length:rows*cols},(_,i)=>({x:b.x+b.width*(i%cols)/(cols-1),y:b.y+b.height*Math.floor(i/cols)/(rows-1),color:color==='none'?'#6760e8':color})),bounds:{...b}};}
 const catmull=(a,b,c,d,t)=>.5*((2*b)+(-a+c)*t+(2*a-5*b+4*c-d)*t*t+(-a+3*b-3*c+d)*t*t*t);
-function meshGeometry(mesh,row,col,u,v){const at=(r,c,key)=>mesh.points[Math.max(0,Math.min(mesh.rows-1,r))*mesh.cols+Math.max(0,Math.min(mesh.cols-1,c))][key];const result={};for(const key of ['x','y']){const samples=[-1,0,1,2].map(dr=>catmull(...[-1,0,1,2].map(dc=>at(row+dr,col+dc,key)),u));result[key]=catmull(...samples,v);}return result;}
+function legacyMeshGeometry(mesh,row,col,u,v){const at=(r,c,key)=>mesh.points[Math.max(0,Math.min(mesh.rows-1,r))*mesh.cols+Math.max(0,Math.min(mesh.cols-1,c))][key];const result={};for(const key of ['x','y']){const samples=[-1,0,1,2].map(dr=>catmull(...[-1,0,1,2].map(dc=>at(row+dr,col+dc,key)),u));result[key]=catmull(...samples,v);}return result;}
+export function meshKnots(mesh,axis){const count=axis==='rows'?mesh.rows:mesh.cols,value=axis==='rows'?mesh.rowKnots:mesh.colKnots;
+ return Array.isArray(value)&&value.length===count&&value.every((v,i)=>Number.isFinite(v)&&(!i||v>value[i-1]))&&value[0]===0&&value.at(-1)===1?value:Array.from({length:count},(_,i)=>i/(count-1));
+}
+// Nonuniform Hermite curves retain tap-defined parameter spacing. Old saved
+// meshes without knot arrays keep their original Catmull geometry.
+function smoothAxis(get,knots,index,t){
+ const span=knots[index+1]-knots[index],slope=i=>{const a=Math.max(0,i-1),b=Math.min(knots.length-1,i+1);return (get(b)-get(a))/(knots[b]-knots[a]);};
+ const a=get(index),b=get(index+1),ma=slope(index)*span,mb=slope(index+1)*span;
+ return (2*t**3-3*t*t+1)*a+(t**3-2*t*t+t)*ma+(-2*t**3+3*t*t)*b+(t**3-t*t)*mb;
+}
+function meshGeometry(mesh,row,col,u,v){
+ if(!mesh.rowKnots||!mesh.colKnots)return legacyMeshGeometry(mesh,row,col,u,v);
+ const rows=meshKnots(mesh,'rows'),cols=meshKnots(mesh,'cols'),result={};
+ for(const key of ['x','y']){const cache=new Map(),sample=r=>{if(!cache.has(r))cache.set(r,smoothAxis(c=>mesh.points[r*mesh.cols+c][key],cols,col,u));return cache.get(r);};result[key]=smoothAxis(sample,rows,row,v);}return result;
+}
 export function meshSample(mesh,row,col,u,v){const p=[mesh.points[row*mesh.cols+col],mesh.points[row*mesh.cols+col+1],mesh.points[(row+1)*mesh.cols+col],mesh.points[(row+1)*mesh.cols+col+1]],weights=[(1-u)*(1-v),u*(1-v),(1-u)*v,u*v],rgb=p.map(q=>colorRGB(q.color));return {...(mesh.curved?meshGeometry(mesh,row,col,u,v):{x:p.reduce((a,q,i)=>a+q.x*weights[i],0),y:p.reduce((a,q,i)=>a+q.y*weights[i],0)}),rgb:[0,1,2].map(k=>rgb.reduce((a,q,i)=>a+q[k]*weights[i],0))};}
-export function refineMesh(mesh,axis){const rows=axis==='rows'?mesh.rows+1:mesh.rows,cols=axis==='cols'?mesh.cols+1:mesh.cols;if(rows>17||cols>17)throw Error('A mesh can contain up to 17 × 17 colour points.');const points=[];for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){const r=y/(rows-1)*(mesh.rows-1),c=x/(cols-1)*(mesh.cols-1),ri=Math.min(mesh.rows-2,Math.floor(r)),ci=Math.min(mesh.cols-2,Math.floor(c)),q=meshSample(mesh,ri,ci,c-ci,r-ri);points.push({x:q.x,y:q.y,color:'#'+q.rgb.map(v=>Math.round(v).toString(16).padStart(2,'0')).join('')});}return {...mesh,rows,cols,points};}
+export function refineMesh(mesh,axis){const rows=axis==='rows'?mesh.rows+1:mesh.rows,cols=axis==='cols'?mesh.cols+1:mesh.cols;if(rows>17||cols>17)throw Error('A mesh can contain up to 17 × 17 colour points.');const points=[];for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){const r=y/(rows-1)*(mesh.rows-1),c=x/(cols-1)*(mesh.cols-1),ri=Math.min(mesh.rows-2,Math.floor(r)),ci=Math.min(mesh.cols-2,Math.floor(c)),q=meshSample(mesh,ri,ci,c-ci,r-ri);points.push({x:q.x,y:q.y,color:'#'+q.rgb.map(v=>Math.round(v).toString(16).padStart(2,'0')).join('')});}const next={...mesh,rows,cols,points};
+ if(mesh.rowKnots||mesh.colKnots){const resample=(axis,count)=>{const old=meshKnots(mesh,axis);return Array.from({length:count},(_,i)=>{const t=i/(count-1)*(old.length-1),k=Math.min(old.length-2,Math.floor(t));return old[k]+(old[k+1]-old[k])*(t-k);});};next.rowKnots=resample('rows',rows);next.colKnots=resample('cols',cols);}return next;}
 // Insert full grid lines through a cell, preserving every existing control point.
 export function splitMesh(mesh,row,col,u=.5,v=.5,insertCol=true,insertRow=true){
  if((insertRow&&mesh.rows>=17)||(insertCol&&mesh.cols>=17))throw Error('A mesh can contain up to 17 × 17 colour points.');
@@ -13,7 +29,8 @@ export function splitMesh(mesh,row,col,u=.5,v=.5,insertCol=true,insertRow=true){
  if(insertCol)xs.splice(col+1,0,col+Math.max(1e-8,Math.min(1-1e-8,u)));
  if(insertRow)ys.splice(row+1,0,row+Math.max(1e-8,Math.min(1-1e-8,v)));
  const points=ys.flatMap(y=>xs.map(x=>{if(Number.isInteger(x)&&Number.isInteger(y))return structuredClone(mesh.points[y*mesh.cols+x]);const r=Math.min(mesh.rows-2,Math.floor(y)),c=Math.min(mesh.cols-2,Math.floor(x)),q=meshSample(mesh,r,c,x-c,y-r);return {x:q.x,y:q.y,color:'#'+q.rgb.map(v=>Math.round(Math.max(0,Math.min(255,v))).toString(16).padStart(2,'0')).join('')};}));
- return {...mesh,rows:ys.length,cols:xs.length,points};
+ const next={...mesh,rows:ys.length,cols:xs.length,points};
+ if(mesh.rowKnots||mesh.colKnots){const rk=[...meshKnots(mesh,'rows')],ck=[...meshKnots(mesh,'cols')];if(insertRow)rk.splice(row+1,0,rk[row]+(rk[row+1]-rk[row])*Math.max(1e-8,Math.min(1-1e-8,v)));if(insertCol)ck.splice(col+1,0,ck[col]+(ck[col+1]-ck[col])*Math.max(1e-8,Math.min(1-1e-8,u)));next.rowKnots=rk;next.colKnots=ck;}return next;
 }
 export function subdivideMesh(mesh,row,col,u=.5,v=.5){return splitMesh(mesh,row,col,u,v);}
 export function meshCellAt(mesh,p){

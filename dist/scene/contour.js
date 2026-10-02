@@ -1,6 +1,6 @@
 import {evaluated} from '../animation/evaluate.js';
 import {localBounds} from './matrix.js';
-import {createMesh} from './mesh.js';
+import {createMesh,meshKnots} from './mesh.js';
 import {shapeRegion} from './mesh-region.js';
 
 export function constrainMeshPoint(n,time,p,mesh){return shapeRegion(evaluated(n,time)).constrain(p,mesh?.manualBounds||mesh?.bounds);}
@@ -29,8 +29,10 @@ export function fitMesh(n,time=0,previous){
  const v=evaluated(n,time),b=localBounds(n,time),region=shapeRegion(v);
  let center={x:b.x+b.width/2,y:b.y+b.height/2};
  if(!region.contains(center)){let best=-1;for(let r=1;r<30;r++)for(let c=1;c<30;c++){const p={x:b.x+b.width*c/30,y:b.y+b.height*r/30};if(!region.contains(p))continue;const score=Math.min(...region.edges.map(([a,z])=>{const dx=z.x-a.x,dy=z.y-a.y,t=Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.y-a.y)*dy)/(dx*dx+dy*dy||1)));return Math.hypot(a.x+dx*t-p.x,a.y+dy*t-p.y);}));if(score>best){best=score;center=p;}}if(best<0)throw Error('This shape is too narrow for a contour mesh.');}
- const mesh=previous?structuredClone(previous):createMesh(b,v.fill,5,5);mesh.bounds={...b};mesh.contour=true;mesh.geometryTime=time;mesh.curved=n.type==='ellipse'||v.nodes?.some(p=>p.in||p.out)||false;
- mesh.points=mesh.points.map((p,i)=>{const u=(i%mesh.cols)/(mesh.cols-1)*2-1,v=Math.floor(i/mesh.cols)/(mesh.rows-1)*2-1,f=Math.max(Math.abs(u),Math.abs(v));if(!f)return {...p,...center};const dx=u*b.width/2,dy=v*b.height/2;let distance=Infinity;
+ const mesh=previous?structuredClone(previous):createMesh(b,v.fill,3,3);mesh.bounds={...b};mesh.contour=true;mesh.geometryTime=time;mesh.curved=previous?!!previous.curved:true;
+ if(!previous){mesh.rowKnots=[0,.5,1];mesh.colKnots=[0,.5,1];}
+ const rowKnots=meshKnots(mesh,'rows'),colKnots=meshKnots(mesh,'cols');
+ mesh.points=mesh.points.map((p,i)=>{const u=colKnots[i%mesh.cols]*2-1,v=rowKnots[Math.floor(i/mesh.cols)]*2-1,f=Math.max(Math.abs(u),Math.abs(v));if(!f)return {...p,...center};const dx=u*b.width/2,dy=v*b.height/2;let distance=Infinity;
  // Stop at the first boundary, including a hole, rather than using one outer ring.
  for(const [a,q] of region.edges){const sx=q.x-a.x,sy=q.y-a.y,det=dx*sy-dy*sx;if(Math.abs(det)<1e-9)continue;const ax=a.x-center.x,ay=a.y-center.y,t=(ax*sy-ay*sx)/det,k=(ax*dy-ay*dx)/det;if(t>1e-8&&k>=0&&k<=1)distance=Math.min(distance,t);}
  const q=Number.isFinite(distance)?{x:center.x+dx*distance*f,y:center.y+dy*distance*f}:{x:center.x+dx,y:center.y+dy};return {...p,...region.constrain(q,b)};});return mesh;

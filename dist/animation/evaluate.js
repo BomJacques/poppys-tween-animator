@@ -1,5 +1,8 @@
 const shadowDefaults={shadowEnabled:false,shadowX:12,shadowY:12,shadowBlur:12,shadowOpacity:.35,shadowColor:'#000000'};import {cubicProgress,limitValue} from './curves.js';
-import {clone} from '../document/model.js';
+import {clone,walk,animatable} from '../document/model.js';
+const autoKeyPolicies=new WeakMap();
+export function configureAutoKey(project,enabled,ease='easeInOut'){walk(project.layers,n=>autoKeyPolicies.set(n,{enabled:!!enabled,ease}));}
+
 export const easing={hold:()=>0,linear:t=>t,easeIn:t=>t*t,easeOut:t=>1-(1-t)**2,easeInOut:t=>t<.5?2*t*t:1-(-2*t+2)**2/2};
 function rgb(c){if(/^#[0-9a-f]{3}$/i.test(c))c='#'+[...c.slice(1)].map(x=>x+x).join('');return /^#[0-9a-f]{6}$/i.test(c)?[1,3,5].map(i=>parseInt(c.slice(i,i+2),16)):null;}
 export function compatible(a,b){return Array.isArray(a)&&Array.isArray(b)&&a.length===b.length&&a.every((n,i)=>!!n.move===!!b[i].move&&!!n.close===!!b[i].close&&['in','out'].every(k=>!!n[k]===!!b[i][k]));}
@@ -10,4 +13,4 @@ export function putKey(n,prop,time,value,ease='easeInOut'){const block=n.blocks?
 export function enableTrack(n,prop,time,ease='easeInOut'){const value=clone(evaluated(n,time)[prop]);const tracks=activeTracks(n,time),block=n.blocks?.findLast(b=>b.tracks&&time>=b.start&&time<b.end),first=block?.start||0;if(!tracks[prop]?.length&&time>first)putKey(n,prop,first,evaluated(n,first)[prop]??shadowDefaults[prop],ease);return putKey(n,prop,time,value,ease);}
 export function activeTracks(n,time){return {...n.tracks,...(n.blocks?.findLast(b=>b.tracks&&time>=b.start&&time<b.end)?.tracks||{})};}
 export function allTracks(n){return [n.tracks,...(n.blocks||[]).map(b=>b.tracks).filter(Boolean)];}
-export function setProperty(n,prop,value,time){const tracks=activeTracks(n,time);if(prop==='nodes'&&!tracks.nodes?.length&&allTracks(n).some(tracks=>Object.values(tracks).some(t=>t.length))){const block=n.blocks?.findLast(b=>b.tracks&&time>=b.start&&time<b.end);putKey(n,'nodes',block?.start||0,evaluated(n,block?.start||0).nodes);}if(tracks[prop]?.length||n.tracks[prop]?.length)putKey(n,prop,time,value);else n[prop]=value;}
+export function setProperty(n,prop,value,time){const tracks=activeTracks(n,time),policy=autoKeyPolicies.get(n);if(policy?.enabled&&animatable.includes(prop)&&!tracks[prop]?.length&&!n.tracks[prop]?.length&&JSON.stringify(evaluated(n,time)[prop])!==JSON.stringify(value)){enableTrack(n,prop,time,policy.ease);Object.assign(tracks,activeTracks(n,time));} if(prop==='nodes'&&!tracks.nodes?.length&&allTracks(n).some(tracks=>Object.values(tracks).some(t=>t.length))){const block=n.blocks?.findLast(b=>b.tracks&&time>=b.start&&time<b.end);putKey(n,'nodes',block?.start||0,evaluated(n,block?.start||0).nodes);}if(tracks[prop]?.length||n.tracks[prop]?.length)putKey(n,prop,time,value);else n[prop]=value;}
