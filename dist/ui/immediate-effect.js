@@ -1,0 +1,11 @@
+import {find,isLocked} from '../document/model.js';
+import {configureAutoKey} from '../animation/evaluate.js';
+export class ImmediateEffectSession{
+ constructor(a,id,label,read,write,validate,enable){Object.assign(this,{a,id,label,readValue:read,writeValue:write,validate,enable,doc:a.doc,time:a.time,closed:false,before:null});this.values=read();a.activeEffectSessions??=new Set();a.activeEffectSessions.add(this);}
+ set(prop,value){const a=this.a;if(this.closed||a.doc!==this.doc||!find(a.doc,this.id)||isLocked(a.doc,this.id)||!this.validate(prop,value)||a.graphGestureActive||a.stage?.g?.edit||a.timeline?.g?.edit)return false;if(a.time!==this.time){this.flush();this.time=a.time;this.values=this.readValue();}const discrete=prop===this.enable;if(discrete)this.flush();if(this.before&&a.history.before!==this.before)this.before=null;if(!this.before){a.properties?.flush();if(a.history.before)return false;a.history.begin();this.before=a.history.before;}configureAutoKey(a.doc,a.autoKey,a.ease);this.values[prop]=value;if(prop!==this.enable)this.values[this.enable]=true;this.writeValue({...this.values},prop,this.time);if(discrete)this.flush();return true;}
+ flush(){if(!this.before)return;const own=this.a.history.before===this.before;this.before=null;if(own&&this.a.doc===this.doc)this.a.history.commit(this.label);else if(own)this.a.history.before=null;}
+ refresh(){if(this.closed)return;if(this.a.doc!==this.doc||!find(this.a.doc,this.id)){this.cancel();return;}if(this.a.time!==this.time){this.flush();this.time=this.a.time;}this.values=this.readValue();}
+ cancel(){if(this.closed)return;this.flush();this.closed=true;this.a.activeEffectSessions.delete(this);}
+ apply(){if(this.closed)return false;this.cancel();return true;}
+}
+export function bindImmediateEffect(d,s){const flush=()=>s.flush(),outside=e=>{if(!d.contains(e.target))d.close();};d.addEventListener('change',flush);d.addEventListener('focusout',flush);d.addEventListener('pointerup',flush);d.addEventListener('pointercancel',flush);document.addEventListener('pointerdown',outside,true);const keys=e=>{if(!d.contains(e.target))d.close();};document.addEventListener('keydown',keys,true);d.addEventListener('close',()=>{s.cancel();document.removeEventListener('pointerdown',outside,true);document.removeEventListener('keydown',keys,true);},{once:true});}

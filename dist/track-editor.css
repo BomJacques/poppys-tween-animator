@@ -39,3 +39,8 @@ dialog.graph-dialog.track-editor.track-editor-folded[open]{height:auto}
 .track-editor .graph-top [data-graph-view]{width:120px;flex:0 0 120px;font-size:12px}.track-editor .graph-top [data-graph-interpolation]{padding-inline:8px}.track-editor .graph-unit-legend{font-size:12px;fill:currentColor}.track-editor .value-tangent circle.selected{fill:#f5cf64;stroke:#5d4b18;stroke-width:1.5}.track-editor .value-graph .curve-arm{stroke:#d3b653;stroke-width:1.5}.track-editor .value-graph .graph-point{cursor:grab}.track-editor .value-graph .graph-point:focus-visible{outline:none}.track-editor .value-graph .graph-point:focus-visible circle:last-child{stroke:#70bfff;stroke-width:3}
 
 .track-editor .graph-top>label{order:-1}
+/* Visible point commands and transport remain available while tracks are folded. */
+.track-editor .graph-point-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:6px;flex-shrink:0;margin:2px 0 6px}
+.track-editor .graph-point-toolbar>div{display:flex;flex-wrap:wrap;gap:6px}
+.track-editor .graph-point-toolbar button{min-width:44px;min-height:44px;font-size:12px;padding:0 10px;touch-action:manipulation}
+.track-editor .graph-point-toolbar output{flex:1;min-width:130px;font-size:12px;line-height:1.35;overflow-wrap:anywhere}

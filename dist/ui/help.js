@@ -25,7 +25,7 @@ const pages=[
  ],
  [
   "Colour and Last 10 colours",
-  "Fill and Stroke beside the selected name open the colour panel. Choose a colour or enter its hex value, preview it on the canvas, then Apply colour. Cancel discards the preview. Last 10 colours contains recently applied colours. New artwork uses the last applied colour. Hold a mesh point, or choose Point colour, to colour that shading point."
+  "Fill and Stroke beside the selected name open the colour panel. Swatches and valid hex values change the artwork immediately. Done, X and Escape keep the edit; Undo restores the previous colour. Last 10 colours remembers your completed edits. New artwork uses the last chosen colour. Hold a mesh point, or choose Point colour, to colour that shading point immediately."
  ],
  [
   "Set a pivot without moving artwork",
@@ -69,7 +69,7 @@ const pages=[
  ],
  [
   "Timeline tabs and navigation",
-  "Sequence and Keys share one compact, finger-sized control row; switch tabs for block or key editing. Playback stays visible. Previous/Next key steps through selected layers or tracks. Next pose +1s advances one second and extends the composition if needed; edit artwork at that new time. Timeline Fit shows the full sequence. Keyframe options → Timeline view → Focus block zooms the selected animation or audio block."
+  "Sequence and Keys share one compact, finger-sized control row; switch tabs for block or key editing. Playback stays visible. Tap a sequencer keyframe for its outgoing easing profiles: slow start/end, bounce in/out and standard eases. Dragging still moves the key. Previous/Next key steps through selected layers or tracks. Next pose +1s advances one second and extends the composition if needed; edit artwork at that new time. Timeline Fit shows the full sequence. Keyframe options → Timeline view → Focus block zooms the selected animation or audio block."
  ],
  [
   "Stretch a layer’s animation",
@@ -85,7 +85,7 @@ const pages=[
  ],
  [
   "Value and Speed graphs",
-  "Graph opens a dock while the canvas and Playback stay accessible. Value graph drags round keys horizontally for time and vertically for value; its incoming/outgoing handles change easing. Speed graph shows signed change per second and permits time-only key drags. Change values in Value graph or exact numeric fields. Easy Ease uses zero speed at the selected key with 33.33% influence; Linear and Hold affect adjacent segments."
+  "Graph opens a dock while the canvas stays accessible. Add point and Delete point edit the active parameter. Play/Pause and Stop are available inside the dock, including with tracks collapsed. Stop returns to the composition or loop start. Value graph drags round keys horizontally for time and vertically for value; its incoming/outgoing handles change easing. Speed graph shows signed change per second and permits time-only key drags. Change values in Value graph or exact numeric fields. Easy Ease uses zero speed at the selected key with 33.33% influence; Linear and Hold affect adjacent segments."
  ],
  [
   "Exact graph controls",
@@ -93,7 +93,7 @@ const pages=[
  ],
  [
   "Shadows and motion blur",
-  "Use Style → Effects or Object options → Appearance. Drop shadow previews offset, blur, opacity and colour; Apply keeps one edit, Cancel discards it, and Animate shadow enables tracks. Motion blur softens animated movement; adjust its shutter angle and sample count. Reference and group launchers show their relevant options. Effects are included in exports."
+  "Use Style → Effects or Object options → Appearance. Drop shadow changes offset, blur, opacity and colour immediately; motion blur settings also apply immediately. Done, X and Escape keep changes; Undo restores the previous settings. Animate shadow enables tracks. Motion blur softens animated movement; adjust its shutter angle and sample count. Reference and group launchers show their relevant options. Effects are included in exports."
  ],
  [
   "Presets and more time",

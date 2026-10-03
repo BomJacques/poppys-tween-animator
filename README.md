@@ -50,7 +50,7 @@ The inspector groups controls in tabs:
 - **Shape:** text, path points and geometry.
 - **Animate:** property tracks and round key buttons.
 
-**Style → Effects** and **Object options → Appearance** contain Drop shadow and Motion blur. Shadow controls preview offsets, blur, opacity and colour; Apply commits one undo step, Cancel discards the preview, and Animate shadow enables effect tracks. Motion blur has shutter angle and sample-count controls. Reference and group launchers show their appropriate options. Effects are included in SVG, video and PNG exports.
+**Style → Effects** and **Object options → Appearance** contain Drop shadow and Motion blur. Shadow controls immediately change offsets, blur, opacity and colour on the layer. Motion blur settings also apply immediately. Done, X and Escape keep changes; Undo restores the previous settings. Continuous slider or pad gestures are one Undo step. Animate shadow enables effect tracks. Motion blur has shutter angle and sample-count controls. Reference and group launchers show their appropriate options. Effects are included in SVG, video and PNG exports.
 
 ## Spin, line noise and sequencer shortcuts
 
@@ -62,7 +62,7 @@ Rotation retains signed full turns across handle drags, numeric fields, keyframe
 
 ## Colour, pivots and shape editing
 
-Fill/Stroke beside the selected name opens live colour preview with hex entry and **Last 10 colours**. Apply commits the chosen colour; Cancel restores the previous appearance. The last applied colour is remembered for new artwork. Hold selected artwork still for 550 ms for the grouped clipboard, Colour, pivot and selection menu; moving more than 8 screen pixels cancels the hold. Edit → Clipboard also provides Cut.
+Fill/Stroke beside the selected name opens immediate colour editing with hex entry and **Last 10 colours**. Choosing a swatch or entering a valid colour changes the artwork immediately. Done, X and Escape keep the edit; Undo restores the previous colour. A continuous colour gesture is one Undo step. Mesh-point colours use the same behaviour. The last chosen colour is remembered for new artwork. Hold existing artwork still for 550 ms, including while a Shapes tool is active, to open the grouped clipboard, Colour, pivot and selection menu; moving more than 8 screen pixels cancels the hold. Edit → Clipboard also provides Cut.
 
 **Pivot** explicitly reveals a finger-sized target. Drag it or use **Centre pivot**, then choose **Done pivot**. Artwork stays in place while its pivot changes, and animated pivot edits preserve the original frame-zero pose. Ordinary object editing keeps the pivot target hidden. Zoom enlarges the vector artwork instead of scaling a flattened canvas picture.
 
@@ -92,13 +92,15 @@ Preview/export shading resolution adapts up to **2048 pixels on the longer edge*
 
 ## Value and Speed graphs
 
-Graph opens a **modeless dock**, leaving the canvas and Playback accessible. Parameter lanes select the active property; Collapse tracks folds the dock and Resize changes its size.
+Graph opens a **modeless dock**, leaving the canvas accessible. Its visible Add point and Delete point controls edit the selected parameter. Play/Pause and Stop work inside the dock and stay available when tracks are collapsed; Stop returns to the composition or loop start. Parameter lanes select the active property; Collapse tracks folds the dock and Resize changes its size.
 
 **Value graph** moves round keys in time and value and exposes the selected key's incoming/outgoing handles. Precise numeric fields use pixels, degrees, percentages or scale factors. **Speed graph** shows signed change per second and permits time-only key drags; edit values in Value graph or its numeric fields. Hold jumps are omitted from the speed curve.
 
 **Easy Ease** sets zero speed at the selected key with 33.33% influence on its incoming/outgoing sides, matching the familiar [Adobe Graph Editor workflow](https://helpx.adobe.com/after-effects/desktop/animate-in-after-effects/speed-between-keyframes/speed.html). Linear and Hold apply to adjacent segments. Expand Tween to the next key for exact curve controls. Equal-value segments remain flat: their value handles adjust time influence only. Colour, path and mesh tracks show progress; edit their artwork on the canvas. Keys snap to frames and cannot cross neighbouring keys. Graph and canvas edits within a block preserve surrounding animation.
 
 ## Sequence, presets and reference
+
+Tap a sequencer keyframe to choose its outgoing easing profile: Linear, Hold, Ease in/out, Slow start/end, or Bounce in/out. Each choice changes only that key’s segment to the next key, with Undo. Bounce is a piecewise easing curve; convert to Linear or Easy Ease before editing cubic handles. Dragging a keyframe still moves it.
 
 Sequence supports block selection, movement, split, trim, copy/paste and deletion. Trim range retains saved keys or source recordings. Removed animation holds its last retained pose; editing the held range records a new bounded pose without changing its earlier hold. Double-tap an animation block or choose Edit tracks for its parameter graph.
 
@@ -121,3 +123,5 @@ Transparent PNG export creates numbered frames and sequence.json in a ZIP, witho
 Run npm test for document/history, animation, graph, mesh, gesture ownership, timeline, audio, import and export regressions. Local browser checks complement these tests; they do not establish physical iPad usability parity.
 
 The document/, scene/, animation/, renderer/, input/, timeline/, audio/, export/, persistence/ and ui/ folders separate the editor's responsibilities. Third-party runtime code is vendored mp4-muxer, webm-muxer and [polygon-clipping](https://github.com/mfogel/polygon-clipping), with licenses in dist/vendor/.
+
+Image textures reuse one local image asset during preview, including motion blur and onion-skin samples. Cover, Fit, Stretch and Tile retain the original image. Project backups and SVG/PNG/video exports embed the original image data; preview-only Blob URLs are never saved in the project.
