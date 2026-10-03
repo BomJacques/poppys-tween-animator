@@ -18,7 +18,7 @@ For GitHub Pages, choose **GitHub Actions** in the repository's Settings → Pag
 
 1. Every launch starts blank. **File → Project → Open local project** restores saved work; **Open test composition** loads the demo explicitly.
 2. Open **Shapes**, choose a shape, then drag to draw it. Double-tap empty canvas for a standard shape. Pencil follows a stroke; Path places anchors with taps and curves with drags. Choose **Finish path** when done.
-3. Use **Select** to move, resize and rotate artwork. **Uniform size** makes squares/circles while drawing and keeps the existing aspect ratio while resizing. Shift does the same. Two fingers pan and zoom. Hold two fingers still for 300 ms, then drag to pan at fixed zoom; a quick two-finger tap undoes.
+3. Use **Select** to move, resize and rotate artwork. **Uniform size** makes squares/circles while drawing and keeps the existing aspect ratio while resizing. Its blue highlight appears only while enabled. Shift does the same. Two fingers pan, pinch to zoom and twist to rotate the canvas view. Fit returns the canvas upright. Adding a second finger during a visible drawing keeps that drawing and begins canvas navigation. Hold two fingers still for 300 ms, then drag to pan at fixed zoom and angle; a quick two-finger tap undoes.
 4. Turn on **Auto Key**, or add a keyframe at the starting time. Choose **Next pose +1s**, or advance the playhead yourself, then change the artwork. Repeated edits at the same frame update its existing key. Existing animated properties still record with Auto Key off.
 5. Return to frame 0 and press **Play**. Choose **Graph** to refine value, timing and easing. Add audio through File → Import → Audio, or record through Options → Audio.
 6. **File → Export → Animation** exports video with audio or transparent PNG frames. **File → Export → Project backup** saves a portable .poppy file with embedded assets.
@@ -37,9 +37,9 @@ Local saves use IndexedDB. Refresh starts blank; saved projects remain available
 
 **File** separates Project, Import, Export and Help. **Edit** separates History, Clipboard, Selection and Shape construction. **Options** separates Workspace, Canvas, Animation and Audio.
 
-**Options → Workspace settings** contains Scaffold and the Properties-panel preference. Scaffold on places editing choices in Object options; Scaffold off keeps detailed editing controls in a compact row. Both modes retain the tools and editing handles. **File → Project → Composition settings** changes composition size, duration, frame rate and background. Workspace/theme preferences are remembered on this device.
+**Options → Workspace settings** contains Scaffold and the Properties-panel preference. Scaffold on places editing choices in Object options (Shape & style, Animate and Arrange); Scaffold off keeps detailed editing controls in a compact row. Both modes retain the tools and editing handles. **File → Project → Composition settings** changes composition size, duration, frame rate and background. Workspace/theme preferences are remembered on this device.
 
-**Layers** opens a dedicated panel for selecting overlapping artwork, expanding groups, renaming, reordering, visibility and locking. Multi-select supports grouping and selection of several layers. Direct select reaches children inside a group.
+**Layers** opens a dedicated panel for selecting overlapping artwork, expanding groups, renaming, reordering, visibility and locking. Multi-select supports grouping and selection of several layers. Object options → Arrange or the object/layer hold menu offers Bring to front, Bring forward, Send backward and Send to back. Stacking stays within the current group and preserves selected layers’ relative order. Direct select reaches children inside a group.
 
 Properties beside the canvas opens or collapses the inspector. Drag its left divider to resize it; focus the divider for ArrowLeft/Right (16 px), Shift+Arrow (64 px), Home/End (minimum/maximum). The preferred width is remembered and clamped to the current screen size. Cancelled gestures restore the previous width.
 
@@ -52,6 +52,14 @@ The inspector groups controls in tabs:
 
 **Style → Effects** and **Object options → Appearance** contain Drop shadow and Motion blur. Shadow controls preview offsets, blur, opacity and colour; Apply commits one undo step, Cancel discards the preview, and Animate shadow enables effect tracks. Motion blur has shutter angle and sample-count controls. Reference and group launchers show their appropriate options. Effects are included in SVG, video and PNG exports.
 
+## Spin, line noise and sequencer shortcuts
+
+Rotation retains signed full turns across handle drags, numeric fields, keyframes, graphs and exports: 720° interpolates through two complete spins. Transform shows full turns plus the remaining angle. Snap constrains the result without losing accumulated turns. Ungroup refuses animated group transforms, including block-owned tracks, rather than discarding them.
+
+**Style → Line style → Line noise** gives open stroked paths a deterministic vector wobble. Scaffold exposes the same controls under **Object options → Appearance**. Strength sets displacement in pixels, Size sets spacing in pixels, Speed sets cycles/second (0 freezes; negative reverses), and Seed changes the pattern. These four parameters can be keyframed and edited in Graph. Original path anchors, handles and fill are preserved; line profiles, stroke patterns, shadows and motion blur use the evaluated stroke. Preview, SVG, PNG and video share project-clock rendering.
+
+**Sequence → Razor** cuts an animation/audio block at the tapped frame, independent of the playhead. Endpoint taps do nothing. A stationary **550 ms hold** on a block or empty lane opens a modeless **Copy/Paste** menu near your finger; movement, a second touch or cancellation clears the hold. A hold in Razor mode opens the menu without cutting. Paste starts at the held frame, does not seek, and preserves an animation block’s source layer. Audio uses its matching lane/clipboard. Explicit Scrub mode retains immediate blank-lane scrubbing. Commands keep visible labels beside consistent line icons.
+
 ## Colour, pivots and shape editing
 
 Fill/Stroke beside the selected name opens live colour preview with hex entry and **Last 10 colours**. Apply commits the chosen colour; Cancel restores the previous appearance. The last applied colour is remembered for new artwork. Hold selected artwork still for 550 ms for the grouped clipboard, Colour, pivot and selection menu; moving more than 8 screen pixels cancels the hold. Edit → Clipboard also provides Cut.
@@ -60,13 +68,23 @@ Fill/Stroke beside the selected name opens live colour preview with hex entry an
 
 Pencil, Path and Direct point editing show square anchors and round curve handles without the object transform box. Finished Pencil strokes are ready for point editing. Select a point and choose Convert to curve, Smooth or Corner; drag the tangents to shape it. Midpoint insertion preserves the curve. Switch to Select for whole-object resizing/rotation.
 
+In Direct, drag an empty area to marquee individual anchors, including shapes inside nested groups. Drag a selected anchor to move the selected point set together. The group stays intact; locked or hidden contents are excluded. Auto Key preserves earlier poses, and Undo restores the edit in one step. Select mode retains its hold-then-drag object marquee.
+
+In Direct, eligible corners have their own round radius widget. Drag a widget toward the corner to reduce rounding, or away to increase it. **Selected corner radius (px)** gives an exact value. Each corner keeps its own radius; neighbouring edge lengths limit it. Dense Pencil paths reveal more widgets as you zoom in. Smooth points and open endpoints use their Bézier handles instead. Auto Key records radius changes with the path while preserving earlier poses.
+
 **Edit → Shape construction → Add rubber hose limb** creates a basic IK limb rendered as a curved vector stroke. Direct select moves the start/end controls and solves the middle bend from two segment lengths. Drag the middle control across the limb to flip its bend. **Properties → Shape → Limb rig** exposes upper/lower length, bend side and optional stretch. Unreachable targets clamp unless stretch is enabled. Rest lengths and bend side travel with keyed path poses, so seeking does not re-solve old frames. **Style** controls thickness. **Convert to free path** enables ordinary path editing. Existing saved hoses retain their free-curve behavior. This is a two-segment solver with independent limbs, not a connected skeleton or a full commercial rig.
 
 Multi-select closed sibling shapes to Unite, Subtract front, Keep overlap, Exclude overlap or create a Compound path. The result uses the current outline and full new bounds, rather than clipping expanded artwork to an old shape's box. Combining replaces the source shapes at the current frame; Undo restores them. Join paths connects two open paths. Individual source animation tracks are not transferred.
 
+**Move sequence…** in Object options → Animate, object/layer menus, or a held sequence lane shifts the layer’s whole saved animation. Set its new start in seconds or frames. Keys, blocks and cuts move together; groups include animated descendants, and references move their visibility window. Timing differences and sequence length stay intact; audio and other layers keep their timing. Apply makes one undo step and extends the composition when needed, up to ten minutes. Keyframes continue holding their first pose before the shifted start.
+
+Popups share neutral surfaces, clear grouped headings and muted category colours. Object options uses **Shape & style**, **Animate** and **Arrange** tabs; Canvas options uses compact cards and explicit On/Off states. Labels and selected states remain visible alongside colour.
+
 ## Continuous mesh shading
 
 Mesh replaces a closed shape's flat fill with continuous colour shading. Its initial 3 × 3 grid follows the existing outline. Boundary points remain on that outline; internal points adjust the colour flow. Add mesh point inserts grid rows/columns while preserving colours, and optional Set mesh bounds uses two taps inside the shape. Hold a point for colour, or use Point colour.
+
+Pencil and Path drawings can use the same shading. An open drawing with area offers **Close drawing & add mesh**, explicitly joining its endpoints and shading the same object in one undo step. Closed hand-drawn and imported SVG contours work directly. Straight open lines remain strokes; compound drawings require every contour to be closed.
 
 Auto Key or Animate mesh records colour/point changes at later times. Insertion and subdivision update existing mesh keys together; Fit to shape refits the grid. The maximum is **17 × 17 points**. Start small, especially for concave or disjoint artwork.
 
@@ -83,6 +101,8 @@ Graph opens a **modeless dock**, leaving the canvas and Playback accessible. Par
 ## Sequence, presets and reference
 
 Sequence supports block selection, movement, split, trim, copy/paste and deletion. Trim range retains saved keys or source recordings. Removed animation holds its last retained pose; editing the held range records a new bounded pose without changing its earlier hold. Double-tap an animation block or choose Edit tracks for its parameter graph.
+
+Record motion updates the displayed sequence range while the take grows. Saved blocks retain their edited boundaries; later base keys outside those blocks appear as **Base automation** ranges. Editing one of these ranges turns it into an editable block without changing the surrounding animation.
 
 Sequence / + time sets loops, repeats animation on the same layers or adds time. Tempo and beats per bar change measurement without stretching existing keys/audio. Motion presets provides Bounce, Bounce in, Bounce out, Ramp speed and fades, with a replacement/duration preview before Apply. Bounce in settles at the current pose with diminishing overshoot; Bounce out anticipates then exits in the selected direction. Selected blocks constrain preset ranges; inspect the incoming interpolation when replacing existing animation. Audio is repeated separately through blocks.
 

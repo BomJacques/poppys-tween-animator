@@ -1,3 +1,4 @@
+import {lineNoiseActive,lineNoiseSettings} from './line-noise.js';
 import {localBounds,matrix,corners,point,bounds} from './matrix.js';
 import {evaluated} from '../animation/evaluate.js';
 import {parsePath} from './svg-path.js';
@@ -7,7 +8,7 @@ export function shadowPaintBounds(n,time=0,preview){
  const v={...evaluated(n,time),...(preview?.get(n.id)||{})};let b;
  if(v.type==='group'){const pts=[];for(const child of n.children||[]){if(!child.visible)continue;const c={...evaluated(child,time),...(preview?.get(child.id)||{})},paint=shadowPaintBounds(child,time,preview),extent=c.shadowEnabled&&c.shadowOpacity>0?shadowRegion(c,paint):paint;pts.push(...corners(extent).map(p=>point(matrix(c),p)));}b=bounds(pts);}
  else {let shape={...v,tracks:{},blocks:[],blockCuts:[]};if(v.rawPath){try{shape={...shape,rawPath:undefined,nodes:parsePath(v.rawPath)};}catch{}}b=localBounds(shape);}
- const stroke=v.stroke!=='none'?Math.max(0,v.strokeWidth||0):0,pad=stroke*(v.lineJoin==='miter'?5:1)+1;
+ const stroke=v.stroke!=='none'?Math.max(0,v.strokeWidth||0):0,pad=stroke*(v.lineJoin==='miter'?5:1)+1+(lineNoiseActive(v)?lineNoiseSettings(v).lineNoiseAmplitude*2:0);
  return {x:b.x-pad,y:b.y-pad,width:b.width+pad*2,height:b.height+pad*2};
 }
 export function shadowRegion(n,b=shadowPaintBounds(n)){

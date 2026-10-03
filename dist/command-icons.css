@@ -1,0 +1,6 @@
+/* Small consistent line icons complement visible command labels. */
+button.command-with-icon{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:44px;vertical-align:middle}
+.command-icon{width:16px;height:16px;flex:0 0 16px;pointer-events:none}
+.command-label{min-width:0;pointer-events:none}
+.timeline-toolbar button.command-with-icon,.block-toolbar button.command-with-icon,.stage-actions button.command-with-icon{padding-inline:7px}
+button.command-with-icon:disabled .command-icon{opacity:.8}

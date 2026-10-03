@@ -1,4 +1,13 @@
 import {sampledPaths} from './strokes.js';
+import {convertToPath} from './shapes.js';
+export function meshShapeStatus(n){
+ if(!['rectangle','ellipse','path','freehand'].includes(n.type)||n.rubberhoseRig?.enabled)return {supported:false,closable:false,reason:'Choose an individual closed shape for mesh shading.'};
+ const paths=sampledPaths(n),area=p=>{const a=p.points[0];return p.points.slice(1).reduce((max,b,i)=>{const c=p.points[i+2]||a;return Math.max(max,Math.abs((b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x)));},0);};
+ const supported=paths.length>0&&paths.every(p=>p.closed)&&paths.some(p=>area(p)>1e-6),closable=paths.length===1&&!paths[0].closed&&area(paths[0])>1e-6;
+ return {supported,closable,reason:supported?'':closable?'This drawing is an open stroke. Close drawing & add mesh joins its endpoints and shades the enclosed area.':'Mesh needs a closed contour with area. Open lines remain strokes; close each contour first.'};
+}
+export function closeMeshShape(n){const status=meshShapeStatus(n);if(!status.closable)throw Error(status.reason||'This shape is already closed.');if(n.rawPath)convertToPath(n);n.closed=true;return n;}
+
 
 // Sampled fill geometry is shared by placement, fitting and point dragging.
 // Winding counts preserve nonzero compound paths; evenodd keeps cut-out holes.

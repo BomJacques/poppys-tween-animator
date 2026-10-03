@@ -1,8 +1,9 @@
+import {lineNoiseAnimated} from '../scene/line-noise.js';
 // Blur is renderer metadata: evaluation never writes back to the document.
 export const MOTION_BLUR_SAMPLE_COUNTS=[3,5,7,9,11];
 export function hasLayerAnimation(n){
  const animated=tracks=>Object.values(tracks||{}).some(keys=>Array.isArray(keys)&&keys.length>0);
- return animated(n.tracks)||(n.blocks||[]).some(b=>animated(b.tracks))||(n.blockCuts||[]).some(c=>Object.keys(c.values||{}).length>0)||(n.referenceFrames?.frames?.length>1)||(n.children||[]).some(hasLayerAnimation);
+ return lineNoiseAnimated(n)||animated(n.tracks)||(n.blocks||[]).some(b=>animated(b.tracks))||(n.blockCuts||[]).some(c=>Object.keys(c.values||{}).length>0)||(n.referenceFrames?.frames?.length>1)||(n.children||[]).some(hasLayerAnimation);
 }
 export function motionBlurSettings(n){const value=n.motionBlur||{};return {enabled:value.enabled===true,shutterAngle:Number.isFinite(value.shutterAngle)?Math.max(0,Math.min(360,value.shutterAngle)):180,samples:MOTION_BLUR_SAMPLE_COUNTS.includes(value.samples)?value.samples:7};}
 export function motionBlurSamples(n,time,fps=24,duration=600){

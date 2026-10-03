@@ -13,15 +13,15 @@ const pages=[
  ],
  [
   "Workspace and Layers",
-  "Scaffold on keeps the canvas simple and places editing choices in Object options. Scaffold off shows the detailed editing row. Properties opens or collapses the inspector. Drag its left divider to resize it; arrow keys resize the focused divider. Hide sequence beside Canvas options gives the canvas more room while keeping Playback visible. Layers opens the layer list: select artwork behind other shapes, expand groups, rename, reorder, hide or lock layers. Multi-select chooses several layers. Preferences are remembered on this device."
+  "Scaffold on keeps the canvas simple and places editing choices in Object options: Shape & style, Animate and Arrange. Popup headings use muted artwork, animation and arrangement colours. Canvas options uses compact cards with explicit On/Off states. Scaffold off shows the detailed editing row. Properties opens or collapses the inspector. Drag its left divider to resize it; arrow keys resize the focused divider. Hide sequence beside Canvas options gives the canvas more room while keeping Playback visible. Layers opens the layer list: select artwork behind other shapes, expand groups, rename, reorder, hide or lock layers. Multi-select chooses several layers. Arrange offers Bring to front, Bring forward, Send backward and Send to back within the current group. Preferences are remembered on this device."
  ],
  [
   "Properties and effects",
-  "Transform holds position, size, scale, rotation and pivot. Style holds Opacity, fill, stroke, line profiles and Mesh shading. Style → Effects opens texture, Drop shadow and Motion blur. Shape holds text and point geometry; Animate holds property tracks. Round key buttons enable animation or add a key at the current frame. Opacity is in Style for groups and images too."
+  "Transform holds position, size, scale, rotation and pivot. Rotation retains full signed turns: 720° is two spins, and the readout shows complete turns plus the remaining angle. Style holds Opacity, fill, stroke, line profiles and Mesh shading. Style → Effects opens texture, Drop shadow and Motion blur. Shape holds text and point geometry; Animate holds property tracks. Round key buttons enable animation or add a key at the current frame. Opacity is in Style for groups and images too."
  ],
  [
   "Select, hold and clipboard",
-  "Select taps the frontmost artwork. Drag to move it. Hold an object still for 550 ms to open Copy/Paste, Colour, pivot and selection actions; moving more than 8 screen pixels cancels the hold. Edit → Clipboard also offers Cut. In Select, a quick empty-canvas touch drag pans. Hold empty canvas for 350 ms until Marquee ready, then drag to select several objects. Two fingers pan/zoom. Hold two fingers still for 300 ms, then drag to pan at the same zoom; lift both fingers before the next gesture. A quick two-finger tap undoes."
+  "Select taps the frontmost artwork. Drag to move it. Hold an object still for 550 ms to open Copy/Paste, Colour, pivot and selection actions; moving more than 8 screen pixels cancels the hold. Edit → Clipboard also offers Cut. In Select, a quick empty-canvas touch drag pans. Hold empty canvas for 350 ms until Marquee ready, then drag to select several objects. Two fingers pan/zoom and twist to rotate the canvas view; Fit returns it upright. Adding a second finger while drawing keeps a visible shape or stroke and switches to canvas navigation. Hold two fingers still for 300 ms, then drag to pan at the same zoom and angle; lift both fingers before the next gesture. A quick two-finger tap undoes."
  ],
  [
   "Colour and Last 10 colours",
@@ -33,11 +33,23 @@ const pages=[
  ],
  [
   "Draw and resize",
-  "Shapes offers Rectangle, Ellipse, Triangle, Polygon, Star and Line. Drag from your finger position; double-tap empty canvas for a standard shape. Uniform size makes squares/circles while drawing and preserves an existing aspect ratio while resizing. Shift does the same with a keyboard. Precision slows movement to 35%; Snap aligns artwork. Canvas Fit resets the view. Zoom enlarges the vector artwork."
+  "Shapes offers Rectangle, Ellipse, Triangle, Polygon, Star and Line. Drag from your finger position; double-tap empty canvas for a standard shape. Uniform size makes squares/circles while drawing and preserves an existing aspect ratio while resizing. Blue means it is on; a neutral button means it is off. Shift does the same with a keyboard. Precision slows movement to 35%; Snap aligns artwork. Canvas Fit resets the view. Zoom enlarges the vector artwork."
  ],
  [
   "Path, Pencil and rubber hose",
   "Pencil follows your stroke and enables point editing when you finish. Path places anchors with taps and curves with drags; choose Finish path. Tap a square point, then Convert to curve, Smooth or Corner, and drag the round handles. Switch to Select for whole-object transforms. Edit → Shape construction → Add rubber hose limb creates a basic IK limb: in Direct, drag its start or end and the bend solves automatically. Drag the middle point across the limb to flip its bend. Properties → Shape controls segment lengths, bend side and optional stretch. Style controls thickness. Advance the playhead before changing the pose to keyframe it. This is a two-segment limb; multiple limbs are independent. Convert to free path enables ordinary path editing."
+ ],
+ [
+  "Animated line noise",
+  "Select an open line, Pencil stroke or path. Style → Line style → Line noise enables a smooth vector wobble. In Scaffold, use Object options → Appearance. Strength controls displacement, Size controls spacing, Speed sets cycles per second and Seed changes the pattern. Speed 0 freezes the noise; negative speed reverses it. Auto Key records numeric parameter changes, or enable their tracks in Animate, then refine them in Graph. Original anchors and handles stay editable. Preview and export use the same project clock."
+ ],
+ [
+  "Round individual corners",
+  "In Direct, each eligible corner has a small round radius widget. Drag it toward the corner for less rounding or away for more. Selected corner radius (px) gives an exact value. Each point keeps its own radius, limited by its neighbouring edges. Zoom in to reveal more widgets on dense Pencil paths. Smooth points and open endpoints use their Bézier handles. Auto Key records rounding with the path and preserves earlier poses."
+ ],
+ [
+  "Select points inside a group",
+  "Use Direct and drag an empty area to marquee anchors on one or several shapes, including nested group contents. Drag a selected square anchor to move that point set together. Groups stay intact. Locked and hidden contents are excluded. Auto Key preserves earlier poses; Undo restores the point edit in one step. Use Select for whole objects and its hold-then-drag object marquee."
  ],
  [
   "Combine and group",
@@ -52,6 +64,10 @@ const pages=[
   "Use Auto Key or Animate mesh, advance the playhead, then change point colours or positions. Insertion and subdivision update all mesh keys together. Fit to shape refits the grid. Shading resolution adapts for preview/export up to 2048 pixels on the longer edge. The outline stays vector; the shaded fill is an embedded PNG. Independent Adobe-style mesh Bézier handles and Illustrator mesh-file import are unavailable."
  ],
  [
+  "Mesh on a drawing",
+  "Pencil and Path drawings use the same mesh shading. If a drawing is open, Object options → Shape & style offers Close drawing & add mesh when it encloses an area. This deliberately joins the endpoints and shades the same object; Undo restores the open drawing. Already closed contours work directly. Straight open lines stay strokes. Compound drawings need every contour closed."
+ ],
+ [
   "Timeline tabs and navigation",
   "Sequence and Keys share one compact, finger-sized control row; switch tabs for block or key editing. Playback stays visible. Previous/Next key steps through selected layers or tracks. Next pose +1s advances one second and extends the composition if needed; edit artwork at that new time. Timeline Fit shows the full sequence. Keyframe options → Timeline view → Focus block zooms the selected animation or audio block."
  ],
@@ -60,8 +76,12 @@ const pages=[
   "Hold an animated object, then choose Animation → Stretch animation. The same command is available in its Layer shadow/effects panel. Set a percentage or new duration: 200% plays twice as slowly; 50% plays twice as fast. Its earliest animated time stays fixed. All parameter keys, blocks and held cuts stretch together; groups include their animated contents. Other layers and audio keep their timing. Reference pictures change playback speed without losing frames. Apply is one undo step."
  ],
  [
+  "Move a layer’s whole sequence",
+  "Object options → Animate, an object/layer menu, or a held sequence lane offers Move sequence. Set the new start in seconds or frames. All saved keys, blocks and cuts move together; groups include animated contents, and references move their visibility window. The sequence keeps its length and easing. Other layers and audio keep their timing. Apply is one undo step. Keyframes hold their first pose before the moved start; moving timing does not hide artwork."
+ ],
+ [
   "Blocks, trimming and loops",
-  "Sequence selects, moves, splits, copies and pastes animation/audio blocks. Trim range shortens the selected block while retaining saved keys or the source recording. Removed animation holds its last retained pose; editing that held range records a new pose without changing the earlier hold. Double-tap an animation block, or choose Edit tracks, for its parameter graphs. Sequence / + time sets the loop or adds time; tempo changes measurement without stretching existing keys or audio."
+  "Sequence selects, moves, splits, copies and pastes animation/audio blocks. Turn on Razor, then tap inside a block to cut at that frame; endpoints are left intact. Hold a block or empty lane for 550 ms to open Copy/Paste. Movement cancels the hold. Paste starts at the held frame without moving the playhead; animation keeps its source layer, and audio pastes to its audio lane. Scrub mode retains immediate scrubbing. Trim range shortens the selected block while retaining saved keys or the source recording. Removed animation holds its last retained pose; editing that held range records a new pose without changing the earlier hold. Double-tap an animation block, or choose Edit tracks, for its parameter graphs. Sequence / + time sets the loop or adds time; tempo changes measurement without stretching existing keys or audio."
  ],
  [
   "Value and Speed graphs",

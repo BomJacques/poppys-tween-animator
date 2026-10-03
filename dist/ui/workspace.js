@@ -28,7 +28,7 @@ export const workspaceToolGroups={
 };
 export function showWorkspaceTools(a,kind='canvas'){
  const groups=workspaceToolGroups[kind]||workspaceToolGroups.canvas;
- const d=a.dialog(kind==='blocks'?'Sequencer options':kind==='keys'?'Keyframe options':'Canvas options',groups.map(([title,ids])=>`<section><h3>${title}</h3><div class="workspace-option-grid">${controlCopies(ids)}</div></section>`).join(''));d.classList.add('workspace-options-dialog');bindControlCopies(a,d);
+ const d=a.dialog(kind==='blocks'?'Sequencer options':kind==='keys'?'Keyframe options':'Canvas options','<div class="workspace-option-cards">'+groups.map(([title,ids])=>`<section class="workspace-option-card"><h3>${title}</h3><div class="workspace-option-grid">${controlCopies(ids)}</div></section>`).join('')+'</div>');d.classList.add('workspace-options-dialog');bindControlCopies(a,d);
 }
 export function bindWorkspace(a){
  bindInspectorResize(a);

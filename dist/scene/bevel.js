@@ -8,6 +8,7 @@ function trimTime(s,want,fromEnd=false){if(!s.curve)return Math.max(0,Math.min(1
 function cut(s,start,end){if(!s.curve)return [mix(s.c[0],s.c[3],start),mix(s.c[0],s.c[3],end)];const left=split(s.c,end)[0];return split(left,end?start/end:0)[1];}
 function pieces(n){const out=[];let part=[];for(const p of n.nodes||[]){if(p.move&&part.length){out.push({points:part,closed:false});part=[];}part.push(p);if(p.close){out.push({points:part,closed:true});part=[];}}if(part.length)out.push({points:part,closed:!!n.closed});return out;}
 const pointText=p=>`${Math.round(p.x*1e8)/1e8} ${Math.round(p.y*1e8)/1e8}`;
+export function cornerDirectionPoints(v,before,after){const usable=p=>p&&Math.hypot(p.x-v.x,p.y-v.y)>1e-8;return [[v.in,before.out,before].find(usable)||v,[v.out,after.in,after].find(usable)||v];}
 export function bevelPathData(n){
  if(n.rawPath)return n.rawPath;
  let result='';
@@ -15,7 +16,7 @@ export function bevelPathData(n){
   if(!p.length)continue;
   if(p.length===1){result+=` M ${pointText(p[0])}`;continue;}
   const count=closed?p.length:p.length-1,segs=Array.from({length:count},(_,i)=>segment(p[i],p[(i+1)%p.length]));
-  const radii=p.map((v,i)=>{const radius=Math.max(0,Number(v.bevelRadius)||0);if(!radius||(!closed&&(i===0||i===p.length-1)))return 0;const before=p[(i-1+p.length)%p.length],after=p[(i+1)%p.length],a=v.in||before.out||before,b=v.out||after.in||after,ax=a.x-v.x,ay=a.y-v.y,bx=b.x-v.x,by=b.y-v.y,al=Math.hypot(ax,ay),bl=Math.hypot(bx,by);if(!al||!bl)return 0;const angle=Math.acos(Math.max(-1,Math.min(1,(ax*bx+ay*by)/(al*bl))));if(angle<.01||Math.PI-angle<.01)return 0;return Math.min(radius/Math.tan(angle/2),distance(before,v)*.45,distance(v,after)*.45);});
+  const radii=p.map((v,i)=>{const radius=Math.max(0,Number(v.bevelRadius)||0);if(!radius||(!closed&&(i===0||i===p.length-1)))return 0;const before=p[(i-1+p.length)%p.length],after=p[(i+1)%p.length],[a,b]=cornerDirectionPoints(v,before,after),ax=a.x-v.x,ay=a.y-v.y,bx=b.x-v.x,by=b.y-v.y,al=Math.hypot(ax,ay),bl=Math.hypot(bx,by);if(!al||!bl)return 0;const angle=Math.acos(Math.max(-1,Math.min(1,(ax*bx+ay*by)/(al*bl))));if(angle<.01||Math.PI-angle<.01)return 0;return Math.min(radius/Math.tan(angle/2),distance(before,v)*.45,distance(v,after)*.45);});
   const trimmed=segs.map((s,i)=>cut(s,trimTime(s,radii[i]),1-trimTime(s,radii[(i+1)%p.length],true)));
   result+=` M ${pointText(trimmed[0][0])}`;
   for(let i=0;i<count;i++){

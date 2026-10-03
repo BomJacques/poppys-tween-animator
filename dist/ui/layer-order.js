@@ -1,0 +1,4 @@
+import {layerOrderNames,canOrderLayers,orderLayers} from '../scene/layer-order.js';
+export function layerOrderControls(a,ids=a.selected){return Object.entries(layerOrderNames).map(([action,label])=>`<button data-layer-order="${action}" ${canOrderLayers(a.doc,ids,action)?'':'disabled'}>${label}</button>`).join('');}
+export function performLayerOrder(a,action,ids=a.selected){if(!canOrderLayers(a.doc,ids,action))return false;let changed=false;a.mutate(layerOrderNames[action],()=>{changed=orderLayers(a.doc,ids,action);});return changed;}
+export function bindLayerOrderControls(a,element,ids){element.addEventListener('click',e=>{const hit=e.target.closest('[data-layer-order]');if(!hit||hit.disabled)return;const selected=typeof ids==='function'?ids():ids||a.selected;performLayerOrder(a,hit.dataset.layerOrder,selected);});}

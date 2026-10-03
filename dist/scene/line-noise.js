@@ -1,0 +1,23 @@
+import {parsePath} from './svg-path.js';
+export const lineNoiseDefaults={lineNoiseEnabled:false,lineNoiseAmplitude:6,lineNoiseSize:40,lineNoiseSpeed:1,lineNoiseSeed:1};
+export const lineNoiseFields={lineNoiseAmplitude:'Noise strength (px)',lineNoiseSize:'Noise size (px)',lineNoiseSpeed:'Noise speed (cycles/s)',lineNoiseSeed:'Noise seed'};
+export function validLineNoiseValue(prop,value){if(prop==='lineNoiseEnabled')return typeof value==='boolean';const range={lineNoiseAmplitude:[0,512],lineNoiseSize:[2,4096],lineNoiseSpeed:[-60,60],lineNoiseSeed:[-1000000,1000000]}[prop];return !!range&&Number.isFinite(value)&&value>=range[0]&&value<=range[1];}
+export function lineNoiseSettings(n){const value={...lineNoiseDefaults,...n};for(const prop of Object.keys(lineNoiseFields)){const range={lineNoiseAmplitude:[0,512],lineNoiseSize:[2,4096],lineNoiseSpeed:[-60,60],lineNoiseSeed:[-1000000,1000000]}[prop];value[prop]=Number.isFinite(value[prop])?Math.max(range[0],Math.min(range[1],value[prop])):lineNoiseDefaults[prop];}return value;}
+function source(n){if(!['path','freehand'].includes(n.type)||n.closed)return null;let nodes=n.nodes;try{if(n.rawPath)nodes=parsePath(n.rawPath);}catch{return null;}return nodes?.length>=2&&!nodes.some(p=>p.close)?nodes:null;}
+export function lineNoiseSupported(n){return !!source(n);}
+export function lineNoiseActive(n){return n.lineNoiseEnabled===true&&lineNoiseSettings(n).lineNoiseAmplitude>0&&n.stroke!=='none'&&n.stroke!=='transparent'&&n.strokeWidth>0&&lineNoiseSupported(n);}
+export function lineNoiseAnimated(n){return lineNoiseActive(n)&&lineNoiseSettings(n).lineNoiseSpeed!==0;}
+const mix=(a,b)=>({x:(a.x+b.x)/2,y:(a.y+b.y)/2});
+function flatten(a,b,out,tolerance,budget,depth=0){const c=a.out||a,d=b.in||b,dx=b.x-a.x,dy=b.y-a.y,length=Math.hypot(dx,dy),distance=p=>length?Math.abs(dy*p.x-dx*p.y+b.x*a.y-b.y*a.x)/length:Math.hypot(p.x-a.x,p.y-a.y);if(depth>=10||budget.count>=24000||Math.max(distance(c),distance(d))<=tolerance){out.push({x:b.x,y:b.y});budget.count++;return;}const ac=mix(a,c),cd=mix(c,d),db=mix(d,b),left=mix(ac,cd),right=mix(cd,db),middle=mix(left,right);flatten({...a,out:ac},{...middle,in:left},out,tolerance,budget,depth+1);flatten({...middle,out:right},{...b,in:db},out,tolerance,budget,depth+1);}
+/** Arc-length sampled procedural stroke. Original anchors/handles are never changed. */
+export function lineNoiseGeometry(n,time=0){
+ if(!lineNoiseActive(n))return null;const settings=lineNoiseSettings(n),nodes=source(n),parts=[],budget={count:0};let part=[],prev;
+ for(const p of nodes){if(!prev||p.move){if(part.length>1)parts.push(part);part=[{x:p.x,y:p.y}];}else flatten(prev,p,part,Math.min(.2,settings.lineNoiseSize/32),budget);prev=p;}if(part.length>1)parts.push(part);if(!parts.length||parts.length>500)return null;
+ const paths=parts.map(points=>{const distances=[0];for(let i=1;i<points.length;i++)distances.push(distances.at(-1)+Math.hypot(points[i].x-points[i-1].x,points[i].y-points[i-1].y));return {points,distances,length:distances.at(-1)};}),total=paths.reduce((sum,p)=>sum+p.length,0);if(total<=1e-8)return null;
+ const output=[],maximum=1000,remaining=maximum-parts.length*2;
+ for(const path of paths){if(path.length<=1e-8)continue;const limit=Math.max(2,2+Math.floor(remaining*path.length/total)),count=Math.min(limit,Math.max(2,Math.ceil(path.length/Math.min(2,settings.lineNoiseSize/18))+1)),size=Math.max(settings.lineNoiseSize,path.length/Math.max(1,count-1)*18),points=[];let segment=1;
+  for(let i=0;i<count;i++){const distance=path.length*i/(count-1);while(segment<path.points.length-1&&path.distances[segment]<distance)segment++;const a=path.points[segment-1],b=path.points[segment],span=path.distances[segment]-path.distances[segment-1],t=span?(distance-path.distances[segment-1])/span:0,dx=b.x-a.x,dy=b.y-a.y,l=Math.hypot(dx,dy)||1,phase=2*Math.PI*(distance/size-(Number.isFinite(time)?time:0)*settings.lineNoiseSpeed),seed=settings.lineNoiseSeed*2.399963229728653,noise=.6*Math.sin(phase+seed)+.27*Math.sin(phase*2+seed*1.37)+.13*Math.sin(phase*3-seed*.73),envelope=i===0||i===count-1?0:Math.sin(Math.PI*i/(count-1)),offset=noise*settings.lineNoiseAmplitude*envelope;points.push({x:a.x+dx*t-dy/l*offset,y:a.y+dy*t+dx/l*offset});}
+  for(let i=0;i<points.length;i++){const p=points[i],before=points[Math.max(0,i-1)],after=points[Math.min(points.length-1,i+1)],dx=(after.x-before.x)/6,dy=(after.y-before.y)/6;output.push({...p,in:{x:p.x-dx,y:p.y-dy},out:{x:p.x+dx,y:p.y+dy},...(i===0&&output.length?{move:true}:{})});}
+ }
+ return {...n,nodes:output,rawPath:undefined,closed:false,tracks:{},blocks:[],blockCuts:[]};
+}

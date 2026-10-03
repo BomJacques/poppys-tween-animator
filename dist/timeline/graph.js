@@ -1,10 +1,11 @@
+import {lineNoiseFields} from '../scene/line-noise.js';
 import {isolateBlock,layerBlocks} from '../animation/blocks.js';
 import {formatTime,fromSeconds,toSeconds} from '../animation/timing.js';
 import {find,isLocked,clone,animatable} from '../document/model.js';
 import {evaluateTrack,evaluated,enableTrack,easing} from '../animation/evaluate.js';
 import {curvePresets,cubicProgress,moveGraphKey,validCurve} from '../animation/curves.js';
 import {escape} from '../renderer/svg.js';
-export const trackNames={anchorX:'Pivot X',anchorY:'Pivot Y',x:'Position X',y:'Position Y',rotation:'Rotation',scaleX:'Scale X',scaleY:'Scale Y',opacity:'Opacity',fill:'Fill',stroke:'Stroke',strokeWidth:'Stroke width',nodes:'Path shape',mesh:'Mesh shading',shadowX:'Shadow X',shadowY:'Shadow Y',shadowBlur:'Shadow blur',shadowOpacity:'Shadow opacity',shadowColor:'Shadow colour'};
+export const trackNames={...lineNoiseFields,anchorX:'Pivot X',anchorY:'Pivot Y',x:'Position X',y:'Position Y',rotation:'Rotation',scaleX:'Scale X',scaleY:'Scale Y',opacity:'Opacity',fill:'Fill',stroke:'Stroke',strokeWidth:'Stroke width',nodes:'Path shape',mesh:'Mesh shading',shadowX:'Shadow X',shadowY:'Shadow Y',shadowBlur:'Shadow blur',shadowOpacity:'Shadow opacity',shadowColor:'Shadow colour'};
 export function trackPanelSize(width,height,viewport){
  const reserved=viewport.width>=700?300:88,maxWidth=Math.min(680,Math.max(160,viewport.width-reserved)),maxHeight=Math.max(180,viewport.height*.72);
  return {width:Math.min(maxWidth,Math.max(320,width)),height:Math.min(maxHeight,Math.max(180,height))};
@@ -17,7 +18,7 @@ export function graphHitRadius(el,width,height,fallback){
  try{const m=el.getScreenCTM?.();if(m){const scale=Math.min(Math.hypot(m.a,m.b),Math.hypot(m.c,m.d));if(scale>0)return 22/scale;}}catch{}
  const r=el.getBoundingClientRect(),other=fallback?.getBoundingClientRect();const scale=Math.min((r.width||other?.width||width)/width,(r.height||height)/height);return 22/Math.max(.01,scale);
 }
-export function graphUnit(prop){return ['x','y','anchorX','anchorY','strokeWidth','shadowX','shadowY','shadowBlur'].includes(prop)?{label:'px',scale:1}:prop==='rotation'?{label:'°',scale:1}:['opacity','shadowOpacity'].includes(prop)?{label:'%',scale:100}:['scaleX','scaleY'].includes(prop)?{label:'×',scale:1}:{label:'value',scale:1};}
+export function graphUnit(prop){return ['x','y','anchorX','anchorY','strokeWidth','shadowX','shadowY','shadowBlur','lineNoiseAmplitude','lineNoiseSize'].includes(prop)?{label:'px',scale:1}:prop==='lineNoiseSpeed'?{label:'cycles/s',scale:1}:prop==='rotation'?{label:'°',scale:1}:['opacity','shadowOpacity'].includes(prop)?{label:'%',scale:100}:['scaleX','scaleY'].includes(prop)?{label:'×',scale:1}:{label:'value',scale:1};}
 export function segmentCurve(k){return [...(k.bezier||(k.easing==='linear'||!k.easing?[1/3,1/3,2/3,2/3]:k.easing==='easeIn'?[1/3,0,2/3,1/3]:k.easing==='easeOut'?[1/3,2/3,2/3,1]:curvePresets[k.easing]||[1/3,1/3,2/3,2/3]))];}
 export function valueGraphHandles(a,b,c=segmentCurve(a)){const dt=b.time-a.time,dv=b.value-a.value;return [0,1].map(i=>({time:a.time+c[i*2]*dt,value:a.value+c[i*2+1]*dv}));}
 export function curveFromValueHandle(a,b,c,index,time,value){const dt=b.time-a.time,dv=b.value-a.value,result=[...c];if(!(dt>0)||!Number.isFinite(time)||!Number.isFinite(value))return result;result[index*2]=Math.max(0,Math.min(1,(time-a.time)/dt));if(Math.abs(dv)>1e-10)result[index*2+1]=Math.max(-2,Math.min(3,(value-a.value)/dv));return result;}

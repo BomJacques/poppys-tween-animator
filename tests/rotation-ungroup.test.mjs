@@ -1,0 +1,12 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {project,object,clone} from '../dist/document/model.js';
+import {ungroup} from '../dist/scene/operations.js';
+import {evaluated} from '../dist/animation/evaluate.js';
+import {world} from '../dist/scene/matrix.js';
+const key=(id,time,value)=>({id,time,value,easing:'linear'});
+function fixture(){const p=project(),child=object('rectangle'),g=object('group',{children:[child]});p.layers=[g];return {p,g,child};}
+test('Ungroup atomically refuses full-turn rotation held only in a group-owned block',()=>{const {p,g}=fixture();g.blocks=[{id:'spin',name:'Spin',kind:'animation',start:0,end:3,props:['rotation'],tracks:{rotation:[key('a',0,0),key('b',3,720)]}}];assert.equal(evaluated(g,.375).rotation,90);const before=clone(p);assert.throws(()=>ungroup(p,g.id),/animation tracks/);assert.deepEqual(p,before);assert.equal(evaluated(g,1.875).rotation,450);});
+test('all nonempty owned tracks and held cut values are protected against ungroup loss',()=>{for(const prop of ['rotation','x','opacity']){const {p,g}=fixture();g.blocks=[{id:'b',name:'Owned',kind:'animation',start:0,end:2,props:[prop],tracks:{[prop]:[key('a',0,prop==='opacity'?.5:90)]}}];const before=clone(p);assert.throws(()=>ungroup(p,g.id),/animation tracks/);assert.deepEqual(p,before);}const {p,g}=fixture();g.blockCuts=[{start:1,end:2,values:{rotation:720,opacity:.5}}];const before=clone(p);assert.throws(()=>ungroup(p,g.id),/held cuts/);assert.deepEqual(p,before);});
+test('empty owned blocks/cuts permit ungroup and preserve static and child spin transforms',()=>{const {p,g,child}=fixture();g.rotation=720;g.x=50;g.blocks=[{id:'empty',name:'Empty',start:0,end:2,kind:'animation',props:[],tracks:{rotation:[]}}];g.blockCuts=[{start:0,end:1,values:{}}];child.tracks.rotation=[key('a',0,0),key('b',3,-1080)];const frames=[0,.25,.5,1,2.5].map(t=>world(p,child.id,t));const children=ungroup(p,g.id);assert.deepEqual(children,[child]);assert.equal(p.layers[0].id,child.id);for(const [i,t] of [0,.25,.5,1,2.5].entries()){const matrix=world(p,child.id,t);for(let j=0;j<6;j++)assert.ok(Math.abs(matrix[j]-frames[i][j])<1e-9);}assert.equal(child.tracks.rotation.at(-1).value,-1080);});
+test('base animation guard remains intact',()=>{const {p,g}=fixture();g.tracks.rotation=[key('a',0,0),key('b',2,1440)];const before=clone(p);assert.throws(()=>ungroup(p,g.id),/animation tracks/);assert.deepEqual(p,before);});
