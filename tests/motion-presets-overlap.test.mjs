@@ -1,0 +1,9 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {project,object,clone} from '../dist/document/model.js';
+import {motionPresetPlan,applyMotionPreset} from '../dist/animation/presets.js';
+function fixture(prop='x'){const p=project(),n=object('rectangle',{x:0});p.layers=[n];n.blocks=[{id:'outer',name:'Outer',kind:'animation',start:0,end:4,props:['x'],tracks:{x:[{id:'x0',time:0,value:0,easing:'linear'},{id:'x4',time:4,value:0,easing:'linear'}]}},{id:'later',name:'Later',kind:'animation',start:2,end:3,props:[prop],tracks:{[prop]:[{id:'later0',time:2,value:prop==='x'?1000:.5,easing:'hold'}]}}];return {p,n};}
+test('bounce presets reject future higher-priority override of their own parameter atomically',()=>{for(const type of ['bounceIn','bounceOut']){const {p,n}=fixture(),before=clone(p),options={type,duration:2,direction:'right',distance:100};assert.throws(()=>motionPresetPlan(p,[n.id],1,options),/block|overrid|overlap/i);assert.throws(()=>applyMotionPreset(p,[n.id],1,options),/block|overrid|overlap/i);assert.deepEqual(p,before);}});
+test('future overrides of an unrelated parameter do not prevent a position preset',()=>{const {p,n}=fixture('opacity');assert.doesNotThrow(()=>applyMotionPreset(p,[n.id],1,{type:'bounceOut',duration:2,direction:'right',distance:100}));});
+test('base position preset may cross a future opacity-only block',()=>{const {p,n}=fixture('opacity');n.blocks.shift();assert.doesNotThrow(()=>applyMotionPreset(p,[n.id],1,{type:'bounceOut',duration:2,direction:'right',distance:100}));});
+test('a selected higher-priority block can overlap a lower-priority parameter block',()=>{const {p,n}=fixture();n.blocks.reverse();assert.doesNotThrow(()=>applyMotionPreset(p,[n.id],1,{type:'bounceOut',duration:2,direction:'right',distance:100,blockIds:{[n.id]:'outer'}}));});

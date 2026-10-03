@@ -1,0 +1,14 @@
+import {find} from '../document/model.js';
+import {escape} from '../renderer/svg.js';
+import {layerAnimationRange,layerStretchPlan,stretchLayerAnimation} from '../animation/layer-stretch.js';
+export function showLayerStretch(a,id=a.selected[0]){
+ const n=find(a.doc,id);if(!n)return a.toast('Select an animated layer first.');a.pause();a.properties.flush();a.stage?.finishPath?.();
+ let range;try{range=layerAnimationRange(a.doc,id);layerStretchPlan(a.doc,id,1);}catch(e){return a.toast(e.message);}
+ const initialDuration=range.duration,fmt=t=>Number(t.toFixed(4)),d=a.dialog('Stretch animation · '+escape(n.name),`<p>All animation on this ${n.type==='group'?'group and its descendants':'layer'}: <strong>${fmt(range.start)}–${fmt(range.end)} seconds</strong>. The start stays fixed. Parameter keys, owned blocks and held cuts keep their relative offsets.</p><form><div class="dialog-grid"><label>Stretch (%)<input name="percent" data-stretch-percent type="number" min=".01" step="any" value="100" required></label><label>New range duration (seconds)<input name="duration" data-stretch-duration type="number" min="${1/a.doc.fps}" max="${600-range.start}" step="any" value="${initialDuration}" required></label></div><p data-stretch-preview role="status"></p><p class="subtle">200% plays twice as slowly; 50% plays twice as fast. Subframe timing is preserved to avoid merging keys. Other layers and audio keep their timing.${range.references?' Reference pictures keep their source frames and change playback speed.':''}</p><div class="dialog-actions"><button type="button" data-close>Cancel</button><button type="submit" class="primary" data-stretch-apply>Apply stretch</button></div></form>`,(form,dialog)=>{
+  const factor=Number(form.get('duration'))/initialDuration;
+  a.mutate('Stretch layer animation',()=>{stretchLayerAnimation(a.doc,id,factor);});a.time=Math.min(a.time,a.doc.duration);dialog.close();a.toast('Animation stretched. Undo restores its timing.');
+ });
+ const percent=d.querySelector('[data-stretch-percent]'),duration=d.querySelector('[data-stretch-duration]'),status=d.querySelector('[data-stretch-preview]'),apply=d.querySelector('[data-stretch-apply]');
+ const preview=()=>{try{const factor=Number(duration.value)/initialDuration,plan=layerStretchPlan(a.doc,id,factor);status.textContent=`${fmt(range.start)}–${fmt(plan.end)} seconds · ${plan.keys} keys on ${plan.layers} animated layer${plan.layers===1?'':'s'}${plan.extended?' · composition extends to '+fmt(plan.compositionDuration)+' seconds':''}`;apply.disabled=!percent.checkValidity()||!duration.checkValidity();}catch(e){status.textContent=e.message;apply.disabled=true;}};
+ percent.oninput=()=>{duration.value=initialDuration*Number(percent.value)/100;preview();};duration.oninput=()=>{percent.value=Number(duration.value)/initialDuration*100;preview();};preview();return d;
+}

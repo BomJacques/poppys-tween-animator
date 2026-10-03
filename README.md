@@ -18,7 +18,7 @@ For GitHub Pages, choose **GitHub Actions** in the repository's Settings → Pag
 
 1. Every launch starts blank. **File → Project → Open local project** restores saved work; **Open test composition** loads the demo explicitly.
 2. Open **Shapes**, choose a shape, then drag to draw it. Double-tap empty canvas for a standard shape. Pencil follows a stroke; Path places anchors with taps and curves with drags. Choose **Finish path** when done.
-3. Use **Select** to move, resize and rotate artwork. **Uniform size** makes squares/circles while drawing and keeps the existing aspect ratio while resizing. Shift does the same. Two fingers pan and zoom.
+3. Use **Select** to move, resize and rotate artwork. **Uniform size** makes squares/circles while drawing and keeps the existing aspect ratio while resizing. Shift does the same. Two fingers pan and zoom. Hold two fingers still for 300 ms, then drag to pan at fixed zoom; a quick two-finger tap undoes.
 4. Turn on **Auto Key**, or add a keyframe at the starting time. Choose **Next pose +1s**, or advance the playhead yourself, then change the artwork. Repeated edits at the same frame update its existing key. Existing animated properties still record with Auto Key off.
 5. Return to frame 0 and press **Play**. Choose **Graph** to refine value, timing and easing. Add audio through File → Import → Audio, or record through Options → Audio.
 6. **File → Export → Animation** exports video with audio or transparent PNG frames. **File → Export → Project backup** saves a portable .poppy file with embedded assets.
@@ -31,17 +31,19 @@ Local saves use IndexedDB. Refresh starts blank; saved projects remain available
 
 **Record motion** captures movement over elapsed time. Arm it, use Select, then drag artwork. Recording starts when movement begins and captures positions at the project's frame rate. Release finishes a take as one undo step. It remains armed for another drag until switched off. A second touch, pointer cancellation or Escape cancels the take. Rotation, scaling and other pose changes use Auto Key or property key buttons. Audio recording is a separate control.
 
-**Sequence** and **Keys** tabs share one 44 px control row, saving the space formerly used by a second toolbar while keeping Playback visible. Previous/Next key navigates selected layers or tracks. Next pose +1s advances one second and extends the duration if needed, up to ten minutes. Timeline **Fit** shows the whole sequence; **Keyframe options → Timeline view → Focus block** frames the selected animation or audio block. Hide sequence gives the canvas more room without hiding Playback.
+**Sequence** and **Keys** tabs share one 44 px control row, saving the space formerly used by a second toolbar while keeping Playback visible. Previous/Next key navigates selected layers or tracks. Next pose +1s advances one second and extends the duration if needed, up to ten minutes. Timeline **Fit** shows the whole sequence; **Keyframe options → Timeline view → Focus block** frames the selected animation or audio block. Hide sequence beside Canvas options gives the canvas more room without hiding Playback.
 
 ## Menus, Layers and Properties
 
-**File** separates Project, Import and Export. **Edit** separates History, Clipboard, Selection and Shape construction. **Options** separates Workspace, Canvas, Animation, Audio and Help.
+**File** separates Project, Import, Export and Help. **Edit** separates History, Clipboard, Selection and Shape construction. **Options** separates Workspace, Canvas, Animation and Audio.
 
 **Options → Workspace settings** contains Scaffold and the Properties-panel preference. Scaffold on places editing choices in Object options; Scaffold off keeps detailed editing controls in a compact row. Both modes retain the tools and editing handles. **File → Project → Composition settings** changes composition size, duration, frame rate and background. Workspace/theme preferences are remembered on this device.
 
 **Layers** opens a dedicated panel for selecting overlapping artwork, expanding groups, renaming, reordering, visibility and locking. Multi-select supports grouping and selection of several layers. Direct select reaches children inside a group.
 
-Properties beside the canvas opens or collapses the inspector:
+Properties beside the canvas opens or collapses the inspector. Drag its left divider to resize it; focus the divider for ArrowLeft/Right (16 px), Shift+Arrow (64 px), Home/End (minimum/maximum). The preferred width is remembered and clamped to the current screen size. Cancelled gestures restore the previous width.
+
+The inspector groups controls in tabs:
 
 - **Transform:** position, size, rotation, scale, pivot and resizing.
 - **Style:** Opacity for shapes, groups and images; fill/stroke, line styles/profiles, Mesh shading and Effects.
@@ -58,7 +60,7 @@ Fill/Stroke beside the selected name opens live colour preview with hex entry an
 
 Pencil, Path and Direct point editing show square anchors and round curve handles without the object transform box. Finished Pencil strokes are ready for point editing. Select a point and choose Convert to curve, Smooth or Corner; drag the tangents to shape it. Midpoint insertion preserves the curve. Switch to Select for whole-object resizing/rotation.
 
-**Edit → Shape construction → Add rubber hose limb** creates an editable curved vector path. Its endpoints and middle bend point shape the limb; Style controls its stroke width. Point and width changes support animation.
+**Edit → Shape construction → Add rubber hose limb** creates a basic IK limb rendered as a curved vector stroke. Direct select moves the start/end controls and solves the middle bend from two segment lengths. Drag the middle control across the limb to flip its bend. **Properties → Shape → Limb rig** exposes upper/lower length, bend side and optional stretch. Unreachable targets clamp unless stretch is enabled. Rest lengths and bend side travel with keyed path poses, so seeking does not re-solve old frames. **Style** controls thickness. **Convert to free path** enables ordinary path editing. Existing saved hoses retain their free-curve behavior. This is a two-segment solver with independent limbs, not a connected skeleton or a full commercial rig.
 
 Multi-select closed sibling shapes to Unite, Subtract front, Keep overlap, Exclude overlap or create a Compound path. The result uses the current outline and full new bounds, rather than clipping expanded artwork to an old shape's box. Combining replaces the source shapes at the current frame; Undo restores them. Join paths connects two open paths. Individual source animation tracks are not transferred.
 
@@ -82,7 +84,9 @@ Graph opens a **modeless dock**, leaving the canvas and Playback accessible. Par
 
 Sequence supports block selection, movement, split, trim, copy/paste and deletion. Trim range retains saved keys or source recordings. Removed animation holds its last retained pose; editing the held range records a new bounded pose without changing its earlier hold. Double-tap an animation block or choose Edit tracks for its parameter graph.
 
-Sequence / + time sets loops, repeats animation on the same layers or adds time. Tempo and beats per bar change measurement without stretching existing keys/audio. Motion presets provides Bounce, Ramp speed and fades, with a replacement/duration preview before Apply. Selected blocks constrain preset ranges; inspect the incoming interpolation when replacing existing animation. Audio is repeated separately through blocks.
+Sequence / + time sets loops, repeats animation on the same layers or adds time. Tempo and beats per bar change measurement without stretching existing keys/audio. Motion presets provides Bounce, Bounce in, Bounce out, Ramp speed and fades, with a replacement/duration preview before Apply. Bounce in settles at the current pose with diminishing overshoot; Bounce out anticipates then exits in the selected direction. Selected blocks constrain preset ranges; inspect the incoming interpolation when replacing existing animation. Audio is repeated separately through blocks.
+
+**Hold object → Animation → Stretch animation** (also in the layer effects panel) retimes all parameter tracks, blocks and held cuts on that layer. Groups include descendants. Its earliest animated time stays fixed; 200% plays twice as slowly and 50% twice as fast. References keep their pictures and change playback speed. Other layers and audio stay in place. The preview reports the new range and any composition extension; Apply creates one undo step. Subframe offsets are retained without merging keys.
 
 Movement reference remains a **basic original puppet** with Walk, Run, Sprint, Hop and Slide poses. Rotate it, set a cycle and bake a locked tracing layer below artwork. Onion skin shows nearby artwork frames; ghosts hide during playback and export.
 

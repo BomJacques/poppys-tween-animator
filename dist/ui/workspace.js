@@ -1,3 +1,4 @@
+import {bindInspectorResize} from './inspector-resize.js';
 const preferenceKey='poppy-workspace-v2';
 export function readWorkspacePreferences(storage){try{const value=JSON.parse(storage?.getItem(preferenceKey)||'null');return {guided:typeof value?.guided==='boolean'?value.guided:true,inspectorOpen:typeof value?.inspectorOpen==='boolean'?value.inspectorOpen:false};}catch{return {guided:true,inspectorOpen:false};}}
 function storage(){try{return localStorage;}catch{return null;}}
@@ -30,6 +31,7 @@ export function showWorkspaceTools(a,kind='canvas'){
  const d=a.dialog(kind==='blocks'?'Sequencer options':kind==='keys'?'Keyframe options':'Canvas options',groups.map(([title,ids])=>`<section><h3>${title}</h3><div class="workspace-option-grid">${controlCopies(ids)}</div></section>`).join(''));d.classList.add('workspace-options-dialog');bindControlCopies(a,d);
 }
 export function bindWorkspace(a){
+ bindInspectorResize(a);
  initWorkspace(a);document.querySelector('#workspace-settings')?.addEventListener('click',()=>showWorkspaceSettings(a));document.querySelector('#canvas-options')?.addEventListener('click',()=>showWorkspaceTools(a));document.querySelector('#block-options')?.addEventListener('click',()=>showWorkspaceTools(a,'blocks'));document.querySelector('#key-options')?.addEventListener('click',()=>showWorkspaceTools(a,'keys'));document.querySelector('#inspector-close')?.addEventListener('click',()=>setInspector(a,false));document.querySelector('#show-inspector')?.addEventListener('click',()=>setInspector(a,true));
  const inspector=document.querySelector('.inspector');if(inspector&&typeof MutationObserver!=='undefined'){a.workspaceInspectorObserver=new MutationObserver(()=>{const open=inspector.classList.contains('open');if(open!==a.propertiesOpen){a.propertiesOpen=open;persist(a);for(const button of document.querySelectorAll('[data-properties],#show-inspector'))button.setAttribute('aria-expanded',open);}});a.workspaceInspectorObserver.observe(inspector,{attributes:true,attributeFilter:['class']});}
 }

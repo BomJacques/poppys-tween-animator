@@ -4,7 +4,8 @@ export const studioMenuGroups=[
  ['File',[
   ['Project',[['New project','new-project'],['Open local project…','open-project'],['Save on this device','save-project'],['Duplicate project','duplicate-project'],['Composition settings…','settings'],['Open test composition','load-demo']]],
   ['Import',[['Project…','import-project'],['SVG artwork…','import-svg'],['Video reference…','studio-video-reference'],['Audio…','import-audio']]],
-  ['Export',[['Project backup…','export-project'],['SVG artwork…','export-svg'],['Animation…','export']]]
+  ['Export',[['Project backup…','export-project'],['SVG artwork…','export-svg'],['Animation…','export']]],
+  ['Help',[['How to animate','help']]]
  ]],
  ['Edit',[
   ['History',[['Undo','undo'],['Redo','redo']]],
@@ -14,10 +15,9 @@ export const studioMenuGroups=[
  ]],
  ['Options',[
   ['Workspace',[['Workspace settings…','workspace-settings'],['Light / dark mode','theme'],['Properties panel','studio-properties'],['Layers panel','studio-layers']]],
-  ['Canvas',[['Canvas options…','canvas-options']]],
-  ['Animation',[['Add keyframe','add-key'],['Motion presets…','motion-presets'],['Keyframe options…','key-options'],['Sequencer options…','block-options'],['Playback range…','playback-range'],['Show / hide sequence','toggle-sequence']]],
-  ['Audio',[['Record audio','record'],['Stop recording','stop-record'],['Audio placement & trim…','audio-edit']]],
-  ['Help',[['How to animate','help']]]
+  ['Canvas',[['Canvas options…','canvas-options'],['Show / hide sequence','toggle-sequence']]],
+  ['Animation',[['Add keyframe','add-key'],['Motion presets…','motion-presets'],['Keyframe options…','key-options'],['Sequencer options…','block-options'],['Playback range…','playback-range']]],
+  ['Audio',[['Record audio','record'],['Stop recording','stop-record'],['Audio placement & trim…','audio-edit']]]
  ]]
 ];
 // Flat command inventory remains available to callers; grouping has one source.

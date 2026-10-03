@@ -1,9 +1,21 @@
-import {localBounds} from './matrix.js';
+import {localBounds,matrix,corners,point,bounds} from './matrix.js';
+import {evaluated} from '../animation/evaluate.js';
+import {parsePath} from './svg-path.js';
 export const shadowDefaults={shadowEnabled:false,shadowX:12,shadowY:12,shadowBlur:12,shadowOpacity:.35,shadowColor:'#000000'};
 export const shadowFields={shadowX:'Horizontal offset (px)',shadowY:'Vertical offset (px)',shadowBlur:'Blur (px)',shadowOpacity:'Opacity (0–1)',shadowColor:'Shadow colour'};
-export function shadowSVG(n){
- if(!n.shadowEnabled||n.type==='group'||n.shadowOpacity<=0)return {defs:'',attribute:''};
- const b=localBounds(n),pad=Math.max(n.strokeWidth*2,1)+n.shadowBlur*3+2,id='shadow-'+n.id;
- const x=b.x-pad+Math.min(0,n.shadowX),y=b.y-pad+Math.min(0,n.shadowY),width=b.width+pad*2+Math.abs(n.shadowX),height=b.height+pad*2+Math.abs(n.shadowY);
- return {attribute:`filter="url(#${id})"`,defs:`<defs><filter id="${id}" filterUnits="userSpaceOnUse" x="${x}" y="${y}" width="${width}" height="${height}" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation="${n.shadowBlur}" result="blur"/><feOffset in="blur" dx="${n.shadowX}" dy="${n.shadowY}" result="offset"/><feFlood flood-color="${n.shadowColor}" flood-opacity="${n.shadowOpacity}" result="colour"/><feComposite in="colour" in2="offset" operator="in" result="shadow"/><feMerge><feMergeNode in="shadow"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`};
+export function shadowPaintBounds(n,time=0,preview){
+ const v={...evaluated(n,time),...(preview?.get(n.id)||{})};let b;
+ if(v.type==='group'){const pts=[];for(const child of n.children||[]){if(!child.visible)continue;const c={...evaluated(child,time),...(preview?.get(child.id)||{})},paint=shadowPaintBounds(child,time,preview),extent=c.shadowEnabled&&c.shadowOpacity>0?shadowRegion(c,paint):paint;pts.push(...corners(extent).map(p=>point(matrix(c),p)));}b=bounds(pts);}
+ else {let shape={...v,tracks:{},blocks:[],blockCuts:[]};if(v.rawPath){try{shape={...shape,rawPath:undefined,nodes:parsePath(v.rawPath)};}catch{}}b=localBounds(shape);}
+ const stroke=v.stroke!=='none'?Math.max(0,v.strokeWidth||0):0,pad=stroke*(v.lineJoin==='miter'?5:1)+1;
+ return {x:b.x-pad,y:b.y-pad,width:b.width+pad*2,height:b.height+pad*2};
+}
+export function shadowRegion(n,b=shadowPaintBounds(n)){
+ const pad=Math.max(0,n.shadowBlur||0)*4+2,x=b.x-pad+Math.min(0,n.shadowX||0),y=b.y-pad+Math.min(0,n.shadowY||0);
+ return {x,y,width:Math.max(1,b.width+pad*2+Math.abs(n.shadowX||0)),height:Math.max(1,b.height+pad*2+Math.abs(n.shadowY||0))};
+}
+export function shadowSVG(n,paintBounds){
+ if(!n.shadowEnabled||n.shadowOpacity<=0)return {defs:'',attribute:''};
+ const {x,y,width,height}=shadowRegion(n,paintBounds),id='shadow-'+n.id,region=`x="${x}" y="${y}" width="${width}" height="${height}"`;
+ return {attribute:`filter="url(#${id})"`,defs:`<defs><filter id="${id}" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" x="${x}" y="${y}" width="${width}" height="${height}" color-interpolation-filters="sRGB"><feGaussianBlur ${region} in="SourceAlpha" stdDeviation="${n.shadowBlur}" result="blur"/><feOffset ${region} in="blur" dx="${n.shadowX}" dy="${n.shadowY}" result="offset"/><feFlood ${region} flood-color="${n.shadowColor}" flood-opacity="${n.shadowOpacity}" result="colour"/><feComposite ${region} in="colour" in2="offset" operator="in" result="shadow"/><feMerge ${region}><feMergeNode in="shadow"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`};
 }

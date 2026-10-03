@@ -19,7 +19,7 @@ test('a quick empty-space finger drag pans Select mode and cancels the marquee d
 }));
 test('early drawing movement, release and a second finger cancel pending marquee activation',()=>clock((fire,delay,timer)=>{
  const stage=fixture('rect');stage.down(event(5,5));stage.move(event(40,40));assert.equal(stage.g.type,'draw');assert.equal(timer(),null);stage.up(event(40,40));assert.equal(stage.a.doc.layers.length,1);
- const second=fixture();second.down(event(5,5));second.down({...event(50,5),pointerId:2});assert.equal(second.g.type,'pinch');assert.equal(timer(),null);
+ const second=fixture();second.down(event(5,5));second.down({...event(50,5),pointerId:2});assert.equal(second.g.type,'pinch');assert.equal(second.marqueeHoldTimer,undefined);assert.equal(delay(),300);second.cancel({...event(50,5),pointerId:2});assert.equal(timer(),null);
  const third=fixture();third.down(event(5,5));third.up(event(5,5));assert.equal(timer(),null);assert.equal(third.g,null);
 }));
 

@@ -9,11 +9,11 @@ const pages=[
  ],
  [
   "File, Edit and Options",
-  "File groups Project, Import and Export. Open local project restores saved work; Project backup makes a portable .poppy file. Edit groups History, Clipboard, Selection and Shape construction. Options groups Workspace, Canvas, Animation, Audio and Help. Options → Workspace settings contains Scaffold and the Properties-panel preference; File → Composition settings changes size, duration, frame rate and background."
+  "File groups Project, Import, Export and Help. Open local project restores saved work; Project backup makes a portable .poppy file. Edit groups History, Clipboard, Selection and Shape construction. Options groups Workspace, Canvas, Animation and Audio. Options → Workspace settings contains Scaffold and the Properties-panel preference; File → Composition settings changes size, duration, frame rate and background."
  ],
  [
   "Workspace and Layers",
-  "Scaffold on keeps the canvas simple and places editing choices in Object options. Scaffold off shows the detailed editing row. Properties opens or collapses the inspector. Layers opens the layer list: select artwork behind other shapes, expand groups, rename, reorder, hide or lock layers. Multi-select chooses several layers. Preferences are remembered on this device."
+  "Scaffold on keeps the canvas simple and places editing choices in Object options. Scaffold off shows the detailed editing row. Properties opens or collapses the inspector. Drag its left divider to resize it; arrow keys resize the focused divider. Hide sequence beside Canvas options gives the canvas more room while keeping Playback visible. Layers opens the layer list: select artwork behind other shapes, expand groups, rename, reorder, hide or lock layers. Multi-select chooses several layers. Preferences are remembered on this device."
  ],
  [
   "Properties and effects",
@@ -21,7 +21,7 @@ const pages=[
  ],
  [
   "Select, hold and clipboard",
-  "Select taps the frontmost artwork. Drag to move it. Hold an object still for 550 ms to open Copy/Paste, Colour, pivot and selection actions; moving more than 8 screen pixels cancels the hold. Edit → Clipboard also offers Cut. In Select, a quick empty-canvas touch drag pans. Hold empty canvas for 350 ms until Marquee ready, then drag to select several objects. Two fingers pan/zoom; a quick two-finger tap undoes."
+  "Select taps the frontmost artwork. Drag to move it. Hold an object still for 550 ms to open Copy/Paste, Colour, pivot and selection actions; moving more than 8 screen pixels cancels the hold. Edit → Clipboard also offers Cut. In Select, a quick empty-canvas touch drag pans. Hold empty canvas for 350 ms until Marquee ready, then drag to select several objects. Two fingers pan/zoom. Hold two fingers still for 300 ms, then drag to pan at the same zoom; lift both fingers before the next gesture. A quick two-finger tap undoes."
  ],
  [
   "Colour and Last 10 colours",
@@ -37,7 +37,7 @@ const pages=[
  ],
  [
   "Path, Pencil and rubber hose",
-  "Pencil follows your stroke and enables point editing when you finish. Path places anchors with taps and curves with drags; choose Finish path. Tap a square point, then Convert to curve, Smooth or Corner, and drag the round handles. Switch to Select for whole-object transforms. Edit → Shape construction → Add rubber hose limb creates a curved limb: drag its end or middle points, and change its stroke width in Style."
+  "Pencil follows your stroke and enables point editing when you finish. Path places anchors with taps and curves with drags; choose Finish path. Tap a square point, then Convert to curve, Smooth or Corner, and drag the round handles. Switch to Select for whole-object transforms. Edit → Shape construction → Add rubber hose limb creates a basic IK limb: in Direct, drag its start or end and the bend solves automatically. Drag the middle point across the limb to flip its bend. Properties → Shape controls segment lengths, bend side and optional stretch. Style controls thickness. Advance the playhead before changing the pose to keyframe it. This is a two-segment limb; multiple limbs are independent. Convert to free path enables ordinary path editing."
  ],
  [
   "Combine and group",
@@ -54,6 +54,10 @@ const pages=[
  [
   "Timeline tabs and navigation",
   "Sequence and Keys share one compact, finger-sized control row; switch tabs for block or key editing. Playback stays visible. Previous/Next key steps through selected layers or tracks. Next pose +1s advances one second and extends the composition if needed; edit artwork at that new time. Timeline Fit shows the full sequence. Keyframe options → Timeline view → Focus block zooms the selected animation or audio block."
+ ],
+ [
+  "Stretch a layer’s animation",
+  "Hold an animated object, then choose Animation → Stretch animation. The same command is available in its Layer shadow/effects panel. Set a percentage or new duration: 200% plays twice as slowly; 50% plays twice as fast. Its earliest animated time stays fixed. All parameter keys, blocks and held cuts stretch together; groups include their animated contents. Other layers and audio keep their timing. Reference pictures change playback speed without losing frames. Apply is one undo step."
  ],
  [
   "Blocks, trimming and loops",
@@ -73,7 +77,7 @@ const pages=[
  ],
  [
   "Presets and more time",
-  "Motion presets offers Bounce, Ramp speed and fades for selected artwork. Preview reports replaced keys and any extra time before Apply. A selected animation block limits the affected range. Existing incoming interpolation can change; inspect Graph or Undo if needed. Sequence / + time repeats animation on the same layers or adds seconds. Audio is copied separately as blocks."
+  "Motion presets offers Bounce, Bounce in, Bounce out, Ramp speed and fades for selected artwork. Bounce in settles at the current pose with decreasing overshoot; Bounce out anticipates then leaves in the chosen direction. Preview reports replaced keys and any extra time before Apply. A selected animation block limits the affected range. Existing incoming interpolation can change; inspect Graph or Undo if needed. Sequence / + time repeats animation on the same layers or adds seconds. Audio is copied separately as blocks."
  ],
  [
   "Onion skin and reference poses",

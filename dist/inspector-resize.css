@@ -1,0 +1,10 @@
+/* The divider stays outside the scrolling Properties content. */
+#inspector-resize{position:relative;flex:0 0 8px;width:8px;z-index:9;cursor:col-resize;touch-action:none;user-select:none;background:transparent;border-left:1px solid var(--line)}
+#inspector-resize:before{content:'';position:absolute;top:var(--resize-hit-top,110px);bottom:var(--resize-hit-bottom,48px);left:-36px;width:44px}
+#inspector-resize:after{content:'';position:absolute;width:3px;height:36px;left:2px;top:calc(50% - 18px);border-radius:3px;background:#939393;pointer-events:none}
+#inspector-resize:hover:after,#inspector-resize.resizing:after,#inspector-resize:focus-visible:after{background:#8fbcff}
+#inspector-resize:focus-visible{outline:2px solid #8fbcff;outline-offset:-2px}
+#inspector-resize[hidden]{display:none!important}
+.stage-actions #toggle-sequence{font-size:12px;min-height:44px;border-color:var(--line)}
+@media(max-width:900px){#inspector-resize{position:absolute;right:var(--inspector-width,300px);top:52px;bottom:var(--timeline);width:8px;z-index:10}[data-sequence=hidden] #inspector-resize{bottom:48px}}
+@media(max-width:600px){#inspector-resize{top:48px;bottom:0}}

@@ -2,25 +2,31 @@ import {clone,uid,selectionRoots,isLocked} from '../document/model.js';
 import {evaluated} from './evaluate.js';
 import {layerBlocks,isolateBlock} from './blocks.js';
 
-export const motionPresets=['bounce','ramp','fadeIn','fadeOut','fadeBoth'];
-export const presetNames={bounce:'Bounce',ramp:'Ramp speed',fadeIn:'Fade in',fadeOut:'Fade out',fadeBoth:'Fade in / out'};
+export const motionPresets=['bounce','bounceIn','bounceOut','ramp','fadeIn','fadeOut','fadeBoth'];
+export const presetNames={bounce:'Bounce',bounceIn:'Bounce in',bounceOut:'Bounce out',ramp:'Ramp speed',fadeIn:'Fade in',fadeOut:'Fade out',fadeBoth:'Fade in / out'};
+const bounceTypes=['bounce','bounceIn','bounceOut'];
+const movementTypes=[...bounceTypes,'ramp'];
 const directions={up:{prop:'y',sign:-1},down:{prop:'y',sign:1},left:{prop:'x',sign:-1},right:{prop:'x',sign:1}};
 export function motionPresetPlan(p,ids,time,options={}){
  const type=options.type||'bounce',duration=options.duration??1,direction=options.direction||'up',distance=options.distance??100,ramp=options.ramp||'accelerate';
  if(!motionPresets.includes(type)||!Number.isFinite(time)||time<0||!Number.isFinite(duration)||duration<=0)throw Error('Choose a supported preset, start and duration.');
- if((type==='bounce'||type==='ramp')&&(!directions[direction]||!Number.isFinite(distance)||distance<1||distance>4096))throw Error('Choose a direction and a distance from 1 to 4096 pixels.');
+ if(movementTypes.includes(type)&&(!directions[direction]||!Number.isFinite(distance)||distance<1||distance>4096))throw Error('Choose a direction and a distance from 1 to 4096 pixels.');
  if(type==='ramp'&&!['accelerate','decelerate','both'].includes(ramp))throw Error('Choose a supported speed ramp.');
- const first=Math.round(time*p.fps),frames=Math.round(duration*p.fps),minimum=type==='bounce'?7:type==='fadeBoth'?4:2,start=first/p.fps,end=(first+frames)/p.fps,last=(first+frames-1)/p.fps;
+ const first=Math.round(time*p.fps),frames=Math.round(duration*p.fps),minimum=bounceTypes.includes(type)?7:type==='fadeBoth'?4:2,start=first/p.fps,end=(first+frames)/p.fps,last=(first+frames-1)/p.fps;
  if(frames<minimum)throw Error(`${presetNames[type]} needs at least ${minimum} frames.`);if(end>600)throw Error('Presets must stay within the 10-minute composition limit.');
  const roots=selectionRoots(p,ids),targets=roots.filter(n=>!isLocked(p,n.id)&&!n.reference);if(!targets.length)throw Error('Select an unlocked artwork layer first.');
  const entries=targets.map(n=>{
   const selected=options.blockIds?.[n.id],block=selected?layerBlocks(n,p).find(b=>b.id===selected):n.blocks?.findLast(b=>b.kind==='animation'&&start>=b.start&&start<b.end);
   if(selected&&(!block||block.kind!=='animation'))throw Error('Choose an animation block for this preset.');
   if(block&&(start<block.start-.00001||end>block.end+.00001))throw Error(`${n.name}: the preset must fit inside its animation block. Shorten the duration or move the playhead.`);
-  if(!block&&n.blocks?.some(b=>b.kind==='animation'&&b.start<end&&b.end>start))throw Error(`${n.name}: this range crosses an animation block. Apply inside that block or shorten the range.`);
-  const prop=type==='bounce'||type==='ramp'?directions[direction].prop:'opacity',base=evaluated(n,start)[prop],level=base>0?base:1,span=frames-1,key=(fraction,value,easing='linear')=>({prop,time:(first+Math.round(fraction*span))/p.fps,value,easing});
+  const prop=movementTypes.includes(type)?directions[direction].prop:'opacity',base=evaluated(n,start)[prop],level=base>0?base:1,span=frames-1,key=(fraction,value,easing='linear')=>({prop,time:(first+Math.round(fraction*span))/p.fps,value,easing});
+  if(!block&&n.blocks?.some(b=>b.kind==='animation'&&b.tracks?.[prop]?.length&&b.start<end&&b.end>start))throw Error(`${n.name}: this range crosses a block overriding ${prop}. Apply inside that block or shorten the range.`);
+  const ownerIndex=block?(n.blocks||[]).findIndex(b=>b.id===block.id):-1;
+  const override=block?(n.blocks||[]).slice(ownerIndex+1).find(b=>b.tracks?.[prop]?.length&&b.start<end&&b.end>start):null;
+  if(override)throw Error(`${n.name}: ${override.name} is a later block overriding ${prop} in this range. Choose that block or shorten the preset to an unoverridden range.`);
   if(!block&&n.blockCuts?.some(c=>c.start<end&&c.end>start&&prop in c.values))throw Error(`${n.name}: this range contains held animation from a cut. Choose a retained animation block.`);
   let keys;if(type==='bounce'){const d=distance*directions[direction].sign;keys=[key(0,base,'easeOut'),key(.2,base+d,'easeIn'),key(.45,base,'easeOut'),key(.63,base+d*.42,'easeIn'),key(.78,base,'easeOut'),key(.89,base+d*.16,'easeIn'),key(1,base)];}
+  else if(type==='bounceIn'||type==='bounceOut'){const d=distance*directions[direction].sign,poses=[[0,-1],[.35,.25],[.55,-.1],[.72,.04],[.84,-.015],[.93,.005],[1,0]],sequence=type==='bounceIn'?poses:[...poses].reverse().map(([fraction,offset])=>[1-fraction,-offset]);keys=sequence.map(([fraction,offset])=>key(fraction,base+d*offset,'easeInOut'));}
   else if(type==='ramp')keys=[key(0,base,({accelerate:'easeIn',decelerate:'easeOut',both:'easeInOut'})[ramp]),key(1,base+distance*directions[direction].sign)];
   else if(type==='fadeIn')keys=[key(0,0),key(1,level)];else if(type==='fadeOut')keys=[key(0,base),key(1,0)];else keys=[key(0,0),key(.25,level),key(.75,level),key(1,0)];
   let previous=-1;keys=keys.map((k,i)=>{const frame=Math.max(previous+1,Math.min(span-(keys.length-1-i),Math.round((k.time-start)*p.fps)));previous=frame;return {...k,time:(first+frame)/p.fps};});
