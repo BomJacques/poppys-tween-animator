@@ -1,3 +1,4 @@
+import {pathFollowLabels} from '../ui/path-follow.js';
 import {lineNoiseFields} from '../scene/line-noise.js';
 import {isolateBlock,layerBlocks} from '../animation/blocks.js';
 import {formatTime,fromSeconds,toSeconds,loopRange} from '../animation/timing.js';
@@ -5,7 +6,7 @@ import {find,isLocked,clone,animatable} from '../document/model.js';
 import {evaluateTrack,evaluated,enableTrack,putKey,easing} from '../animation/evaluate.js';
 import {curvePresets,cubicProgress,moveGraphKey,validCurve} from '../animation/curves.js';
 import {escape} from '../renderer/svg.js';
-export const trackNames={...lineNoiseFields,anchorX:'Pivot X',anchorY:'Pivot Y',x:'Position X',y:'Position Y',rotation:'Rotation',scaleX:'Scale X',scaleY:'Scale Y',opacity:'Opacity',fill:'Fill',stroke:'Stroke',strokeWidth:'Stroke width',nodes:'Path shape',mesh:'Mesh shading',shadowX:'Shadow X',shadowY:'Shadow Y',shadowBlur:'Shadow blur',shadowOpacity:'Shadow opacity',shadowColor:'Shadow colour'};
+export const trackNames={...lineNoiseFields,...pathFollowLabels,anchorX:'Pivot X',anchorY:'Pivot Y',x:'Position X',y:'Position Y',rotation:'Rotation',scaleX:'Scale X',scaleY:'Scale Y',opacity:'Opacity',fill:'Fill',stroke:'Stroke',strokeWidth:'Stroke width',nodes:'Path shape',mesh:'Mesh shading',shadowX:'Shadow X',shadowY:'Shadow Y',shadowBlur:'Shadow blur',shadowOpacity:'Shadow opacity',shadowColor:'Shadow colour'};
 export function trackPanelSize(width,height,viewport){
  const reserved=viewport.width>=700?300:88,maxWidth=Math.min(680,Math.max(160,viewport.width-reserved)),maxHeight=Math.max(180,viewport.height*.72);
  return {width:Math.min(maxWidth,Math.max(320,width)),height:Math.min(maxHeight,Math.max(180,height))};

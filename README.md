@@ -137,3 +137,11 @@ At 1280 × 720, the measured canvas height increased from 263 to 291 px and the 
 Reference principles: [After Effects workspaces and grouped panels](https://helpx.adobe.com/after-effects/desktop/get-started/get-familiar-with-the-interface/workspaces-panels-viewers.html), [Procreate interface preferences](https://help.procreate.com/procreate/handbook/actions/actions-preferences), and [Affinity Designer iPad workspaces](https://affinity.help/designer2ipad/English.lproj/pages/Introduction/about_Personas.html). These guide clear work areas, a canvas-focused layout and task-specific controls; they do not establish parity with those applications.
 
 The left tool rail uses consistent vector icons with labels. Property key circles are 20 px visually, with centred 5 px vector dots and unchanged 44 px touch targets.
+
+## Follow a spline
+
+Draw a guide with Path or Pencil, select a shape or grouped character, then choose **Animate → Attach to path…**. Choose the guide and attach. In **Timing**, set a travel duration and choose **Animate along path** to create a Path progress track. Edit its keys and easing in the graph. Fresh travel holds the endpoint; existing animation blocks retain their own bounds.
+
+**Path** controls progress, offset, facing direction, reverse and wrap. **Noise** controls smooth variation with amount, size, speed and a repeatable seed. Controls apply immediately and respect Auto Key and Undo. Play, Pause and Stop stay available in the editor. Hide the guide layer for a clean composition; detach to preserve the displayed pose.
+
+The object's pivot follows the guide; grouped children keep their own animation. Existing X/Y animation adds movement relative to the guide, and rotation supplies a facing offset. The guide uses its geometric centreline, including Bézier and rounded paths; procedural line-noise styling does not alter that route. The same resolved transforms feed preview, selection, motion blur and export. The phase 20 regression suite passes 505 tests.

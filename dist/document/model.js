@@ -1,8 +1,9 @@
+import {pathFollowDefaults} from '../animation/path-follow-settings.js';
 import {lineNoiseDefaults} from '../scene/line-noise.js';
 export const uid=()=>globalThis.crypto?.randomUUID?.()||`id-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 export const clone=v=>structuredClone(v);
-export const animatable=['x','y','rotation','scaleX','scaleY','anchorX','anchorY','opacity','fill','stroke','strokeWidth','nodes','mesh','shadowX','shadowY','shadowBlur','shadowOpacity','shadowColor','lineNoiseAmplitude','lineNoiseSize','lineNoiseSpeed','lineNoiseSeed'];
-export function object(type,props={}){return {id:uid(),type,name:type[0].toUpperCase()+type.slice(1),visible:true,locked:false,x:0,y:0,width:180,height:140,anchorX:0,anchorY:0,scaleX:1,scaleY:1,rotation:0,opacity:1,fill:'#a8adb5',stroke:'#282734',strokeWidth:0,font:'sans-serif',fontSize:64,align:'left',text:'Hello!',radius:0,nodes:[],closed:false,children:[],tracks:{},shadowEnabled:false,shadowX:12,shadowY:12,shadowBlur:12,shadowOpacity:.35,shadowColor:'#000000',...lineNoiseDefaults,...props};}
+export const animatable=['x','y','rotation','scaleX','scaleY','anchorX','anchorY','opacity','fill','stroke','strokeWidth','nodes','mesh','shadowX','shadowY','shadowBlur','shadowOpacity','shadowColor','lineNoiseAmplitude','lineNoiseSize','lineNoiseSpeed','lineNoiseSeed',...Object.keys(pathFollowDefaults)];
+export function object(type,props={}){return {id:uid(),type,name:type[0].toUpperCase()+type.slice(1),visible:true,locked:false,x:0,y:0,width:180,height:140,anchorX:0,anchorY:0,scaleX:1,scaleY:1,rotation:0,opacity:1,fill:'#a8adb5',stroke:'#282734',strokeWidth:0,font:'sans-serif',fontSize:64,align:'left',text:'Hello!',radius:0,nodes:[],closed:false,children:[],tracks:{},shadowEnabled:false,shadowX:12,shadowY:12,shadowBlur:12,shadowOpacity:.35,shadowColor:'#000000',...lineNoiseDefaults,...pathFollowDefaults,...props};}
 export function project(){return {version:1,id:uid(),name:'Untitled animation',width:1280,height:720,fps:24,duration:6,background:'#ffffff',layers:[],audio:null};}
 export function walk(nodes,fn,parent=null){nodes.forEach(n=>{fn(n,parent);walk(n.children||[],fn,n);});}
 export function find(p,id){let found;walk(p.layers,n=>{if(n.id===id)found=n;});return found;}

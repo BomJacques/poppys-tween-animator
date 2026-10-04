@@ -1,0 +1,26 @@
+.path-follow-editor.calm-popup {position:fixed;inset:auto 10px 12px auto;margin:0;width:min(390px,calc(100vw - 84px));max-width:none;max-height:min(620px,72dvh);padding:0;z-index:15;border:1px solid var(--popup-edge);border-top:3px solid var(--popup-mark);border-radius:8px;background:var(--popup-surface);color:var(--popup-ink);box-shadow:0 8px 28px #0005;overflow:hidden;}
+.path-follow-editor[open] {display:flex;flex-direction:column;}
+.path-follow-editor header,.path-follow-editor footer {display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 10px;flex-shrink:0;}
+.path-follow-editor header strong {overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.path-follow-editor header button {flex:0 0 44px;}
+.path-follow-body {overflow:auto;min-height:0;overscroll-behavior:contain;}
+.path-follow-editor fieldset {border:0;padding:0;margin:0;min-width:0;}
+.path-follow-editor section {padding:8px 12px;border-top:1px solid var(--popup-edge);}
+.path-follow-editor h3 {font-size:12px;font-weight:750;margin:0 0 6px;color:var(--popup-mark);}
+.path-follow-editor label {display:flex;flex-direction:column;gap:3px;font-size:12px;}
+.path-follow-editor input,.path-follow-editor select,.path-follow-editor button {min-height:44px;}
+.path-follow-editor input[type=checkbox] {min-height:20px;width:20px;height:20px;margin:0;}
+.path-follow-editor .path-follow-field {display:grid;grid-template-columns:minmax(0,1fr) 88px;align-items:center;gap:0 8px;}
+.path-follow-editor .path-follow-field input[type=range] {grid-column:1/-1;width:100%;margin:0;}
+.path-follow-editor .path-follow-field input[type=number] {width:88px;}
+.path-follow-editor .path-follow-switches label {flex-direction:row;align-items:center;min-height:44px;gap:8px;}
+.path-follow-editor .subtle {font-size:11px;line-height:1.45;margin:5px 0 0;}
+.path-follow-editor .path-follow-actions {display:flex;gap:6px;flex-wrap:wrap;}
+.path-follow-editor [data-follow-animate] {margin-top:6px;width:100%;}
+.path-follow-editor footer {border-top:1px solid var(--popup-edge);flex-wrap:wrap;}
+.path-follow-editor output {font-size:11px;}
+.path-follow-tabs {display:flex;gap:3px;padding:0 10px;flex-shrink:0;border-bottom:1px solid var(--popup-edge);}
+.path-follow-tabs button {flex:1;background:transparent;border:0;border-radius:4px 4px 0 0;border-bottom:3px solid transparent;}
+.path-follow-tabs button[aria-selected=true] {border-bottom-color:var(--popup-mark);background:var(--popup-selected);font-weight:750;}
+.path-follow-editor [role=tabpanel][hidden] {display:none;}
+@media(max-width:700px) {.path-follow-editor.calm-popup {right:6px;bottom:6px;max-height:60dvh;width:min(360px,calc(100vw - 76px));}}

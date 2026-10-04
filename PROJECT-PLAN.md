@@ -15,7 +15,7 @@ Decisions should be explained briefly. Ask only when a choice affects the user's
 
 ## Phase 19: UI and usability audit
 
-Implemented and locally verified. Scope is workspace clarity, useful density and the reported keyframe-circle alignment; new animation tools remain outside this audit.
+Published and verified at commit 92afaccca5616eade047643eb139f533618e2155 (GitHub Actions run 37163950826 succeeded). Scope is workspace clarity, useful density and the reported keyframe-circle alignment; new animation tools remain outside this audit.
 
 - Removed nonfunctional header/property spacing and popup-card stretching. Retained 44 px editing targets and meaningful section separation.
 - Added Audio beside Sequence and Keys, removing the permanent audio footer. Audio recording reveals its Stop controls, including when the sequencer was hidden.
@@ -94,6 +94,8 @@ Update this document at each meaningful intake decision and release completion. 
 
 The left tool rail uses consistent vector icons with labels. Property key circles are 20 px visually, with centred 5 px vector dots and unchanged 44 px touch targets.
 
-## Next phase 20: follow a spline
+## Phase 20: follow a spline
 
-Accepted after the UI audit: attach artwork or a grouped character to a drawn spline, animate progress, orient along its tangent, reverse direction and adjust offset and deterministic noise. Keep controls together under Animate. Required gates: save/restore, group spaces, cycle prevention, consistent preview/export and selection, Undo, and browser checks.
+Implemented and verified: shapes and grouped characters attach to Path or Pencil guides. Path, Noise and Timing tabs control progress, orientation, reverse/wrap, normal offset, coherent noise and travel duration. Changes apply immediately and use Auto Key and Undo. Progress is an editable animation track; fresh travel holds its endpoint. Detaching preserves the current pose.
+
+Release checks: 505 automated tests pass, including saved document validation, transformed groups, cycle prevention, shared preview/export transforms, copy references and timing ownership. All 118 static files pass syntax, module and offline checks. Browser verification covers shape/group attachment, noise edits, Play/Pause/Stop, endpoint holding, detach/Undo and portrait tablet layout with no console warnings or errors. Physical iPad gestures remain the next verification item.

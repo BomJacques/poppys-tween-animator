@@ -1,15 +1,17 @@
+import {rebaseFollowToRoot} from '../animation/path-follow.js';
 import {clone,uid,walk,locate,selectionRoots,isLocked} from '../document/model.js';
 import {world,multiply,identity,inverse,point} from './matrix.js';
 
 export function copyArtwork(project,ids,time=0){
  const roots=selectionRoots(project,ids);if(!roots.length)throw Error('Select artwork to copy.');
- return roots.map(n=>{const copied=clone(n),parent=locate(project,n.id).parent;if(parent)copied.prefix=multiply(world(project,parent.id,time),copied.prefix||identity());return copied;});
+ return roots.map(n=>{const copied=clone(n),parent=locate(project,n.id).parent;if(parent){const parentWorld=world(project,parent.id,time);copied.prefix=multiply(parentWorld,copied.prefix||identity());if(copied.pathFollow){const origin=point(parentWorld,{x:copied.pathFollow.originX,y:copied.pathFollow.originY});copied.pathFollow.originX=origin.x;copied.pathFollow.originY=origin.y;rebaseFollowToRoot(project,n.id,copied,time);}}return copied;});
 }
 export function pasteArtwork(project,clipboard,offset=24){
  if(!clipboard?.length)throw Error('Copy artwork first.');
  let count=0;walk(project.layers,()=>count++);let incoming=0;walk(clipboard,()=>incoming++);if(count+incoming>3000)throw Error('Paste exceeds the 3000-layer limit.');
- const copies=clone(clipboard);
- walk(copies,n=>{n.id=uid();for(const tracks of [n.tracks,...(n.blocks||[]).map(b=>b.tracks).filter(Boolean)])for(const track of Object.values(tracks||{}))for(const k of track)k.id=uid();for(const b of n.blocks||[])b.id=uid();});
+ const copies=clone(clipboard),idMap=new Map();walk(copies,n=>idMap.set(n.id,uid()));
+ walk(copies,n=>{n.id=idMap.get(n.id);for(const tracks of [n.tracks,...(n.blocks||[]).map(b=>b.tracks).filter(Boolean)])for(const track of Object.values(tracks||{}))for(const k of track)k.id=uid();for(const b of n.blocks||[])b.id=uid();});
+ walk(copies,n=>{if(n.pathFollow&&idMap.has(n.pathFollow.targetId)){n.pathFollow.targetId=idMap.get(n.pathFollow.targetId);if(copies.includes(n)){n.pathFollow.originX+=offset;n.pathFollow.originY+=offset;}}});
  for(const n of copies){n.name+=' copy';if(!n.reference)n.locked=false;const inv=inverse(n.prefix||identity()),zero=point(inv,{x:0,y:0}),delta=point(inv,{x:offset,y:offset}),shift={x:delta.x-zero.x,y:delta.y-zero.y};n.x+=shift.x;n.y+=shift.y;for(const tracks of [n.tracks,...(n.blocks||[]).map(b=>b.tracks).filter(Boolean)])for(const prop of ['x','y'])for(const k of tracks?.[prop]||[])k.value+=shift[prop];for(const cut of n.blockCuts||[])for(const prop of ['x','y'])if(typeof cut.values[prop]==='number')cut.values[prop]+=shift[prop];}
  project.layers.push(...copies);return copies;
 }
