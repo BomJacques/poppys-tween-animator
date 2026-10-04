@@ -1,6 +1,6 @@
 # Poppy's project coordinator
 
-Updated: 3 October 2026. Phase 18 is implemented, published and verified. Phase 17 is implemented, published and verified.
+Updated: 4 October 2026. Phase 18 is implemented, published and verified. Phase 17 is implemented, published and verified.
 
 This plan records what is going into the release and why. The coordinator takes incoming ideas, checks the current implementation and chooses their place in the work. The user does not need to schedule each idea.
 
@@ -12,6 +12,19 @@ This plan records what is going into the release and why. The coordinator takes 
 - **Keep working:** a status update or correction changes the relevant item; it does not silently cancel the rest of the release. Confirmed working behaviour leaves the repair queue.
 
 Decisions should be explained briefly. Ask only when a choice affects the user's intended behaviour or requires missing information; do not ask the user to prioritise routine implementation work.
+
+## Phase 19: UI and usability audit
+
+Implemented and locally verified. Scope is workspace clarity, useful density and the reported keyframe-circle alignment; new animation tools remain outside this audit.
+
+- Removed nonfunctional header/property spacing and popup-card stretching. Retained 44 px editing targets and meaningful section separation.
+- Added Audio beside Sequence and Keys, removing the permanent audio footer. Audio recording reveals its Stop controls, including when the sequencer was hidden.
+- Established consistent artwork, animation and audio accents with labels and selected states, so colour is not the only cue. Scaffold and detailed editing retain their capabilities.
+- Docked Properties beside the preview on tablets, clamping its width to keep canvas space. The graph curve fits its initial popup height.
+- Fixed circles beside Rotation and Scale X: the turns readout had displaced them by 20.39 px. All seven Transform circles now measure a 0 px centre difference from their inputs.
+- Validation: 480 tests; syntax/import/offline coverage for 113 static files, 86 JavaScript modules and 107 offline entries. Browser checks at 1280 × 720, 1024 × 768 and 768 × 1024, in guided/detailed and dark/light layouts. Physical iPad/Pencil checks remain queued.
+
+GitHub Actions records deployment of this release. The README records measured space savings and official interface references.
 
 ## Completed release: phase 18
 
@@ -78,3 +91,9 @@ New substantial ideas enter this queue with their intended outcome and dependenc
 ## Maintenance
 
 Update this document at each meaningful intake decision and release completion. Move verified work out of the current release, keep unresolved items explicit and record what was actually published. The README describes the implemented product; this file coordinates upcoming work.
+
+The left tool rail uses consistent vector icons with labels. Property key circles are 20 px visually, with centred 5 px vector dots and unchanged 44 px touch targets.
+
+## Next phase 20: follow a spline
+
+Accepted after the UI audit: attach artwork or a grouped character to a drawn spline, animate progress, orient along its tangent, reverse direction and adjust offset and deterministic noise. Keep controls together under Animate. Required gates: save/restore, group spaces, cycle prevention, consistent preview/export and selection, Undo, and browser checks.

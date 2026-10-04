@@ -125,3 +125,15 @@ Run npm test for document/history, animation, graph, mesh, gesture ownership, ti
 The document/, scene/, animation/, renderer/, input/, timeline/, audio/, export/, persistence/ and ui/ folders separate the editor's responsibilities. Third-party runtime code is vendored mp4-muxer, webm-muxer and [polygon-clipping](https://github.com/mfogel/polygon-clipping), with licenses in dist/vendor/.
 
 Image textures reuse one local image asset during preview, including motion blur and onion-skin samples. Cover, Fit, Stretch and Tile retain the original image. Project backups and SVG/PNG/video exports embed the original image data; preview-only Blob URLs are never saved in the project.
+
+## UI audit · 4 October 2026
+
+The workspace now separates artwork, animation and audio with labelled groups, muted accents and connected tabs. Scaffold retains the full tool set. Empty card stretching, repeated property spacing and excess header padding are removed while editing buttons keep 44 px touch targets. Sequence, Keys and Audio share one row; recording opens Audio and reveals the sequencer if needed so Stop remains reachable.
+
+Properties docks beside the canvas from 700 px viewport width, with resize limits that preserve at least 320 px of canvas. Narrow canvas columns put Uniform size in Canvas options and omit duplicate identity text. Properties headings and popup groups have a consistent hierarchy. Each property key button is anchored to its input, so rotation helper text and stretched grid rows cannot shift its circle. The modeless graph defaults to enough height for its curve.
+
+At 1280 × 720, the measured canvas height increased from 263 to 291 px and the timeline scroll area from 141 to 171 px. Browser checks cover desktop, landscape and portrait tablet layouts, Scaffold/detailed controls, dark/light themes, tab keyboard navigation, popup dismissal, graph visibility and property-circle alignment. The full regression suite passed 480 tests. These are browser checks, not physical iPad/Pencil usability certification.
+
+Reference principles: [After Effects workspaces and grouped panels](https://helpx.adobe.com/after-effects/desktop/get-started/get-familiar-with-the-interface/workspaces-panels-viewers.html), [Procreate interface preferences](https://help.procreate.com/procreate/handbook/actions/actions-preferences), and [Affinity Designer iPad workspaces](https://affinity.help/designer2ipad/English.lproj/pages/Introduction/about_Personas.html). These guide clear work areas, a canvas-focused layout and task-specific controls; they do not establish parity with those applications.
+
+The left tool rail uses consistent vector icons with labels. Property key circles are 20 px visually, with centred 5 px vector dots and unchanged 44 px touch targets.

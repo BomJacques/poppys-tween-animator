@@ -69,7 +69,7 @@ const pages=[
  ],
  [
   "Timeline tabs and navigation",
-  "Sequence and Keys share one compact, finger-sized control row; switch tabs for block or key editing. Playback stays visible. Tap a sequencer keyframe for its outgoing easing profiles: slow start/end, bounce in/out and standard eases. Dragging still moves the key. Previous/Next key steps through selected layers or tracks. Next pose +1s advances one second and extends the composition if needed; edit artwork at that new time. Timeline Fit shows the full sequence. Keyframe options → Timeline view → Focus block zooms the selected animation or audio block."
+  "Sequence, Keys and Audio share one compact, finger-sized control row. Switch tabs for block editing, keyframes or audio recording/import. Audio recording brings its Stop button into view. Playback stays visible above all three tabs. Tap a sequencer keyframe for its outgoing easing profiles: slow start/end, bounce in/out and standard eases. Dragging still moves the key. Previous/Next key steps through selected layers or tracks. Next pose +1s advances one second and extends the composition if needed; edit artwork at that new time. Timeline Fit shows the full sequence. Keyframe options → Timeline view → Focus block zooms the selected animation or audio block."
  ],
  [
   "Stretch a layer’s animation",

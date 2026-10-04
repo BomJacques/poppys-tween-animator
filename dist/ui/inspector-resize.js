@@ -1,6 +1,6 @@
 const widthKey='poppy-properties-width';
 export function inspectorBounds(viewportWidth,railWidth=64){
- const viewport=Math.max(0,Number(viewportWidth)||0),available=Math.max(44,viewport-railWidth-(viewport>900?328:24));
+ const viewport=Math.max(0,Number(viewportWidth)||0),available=Math.max(44,viewport-railWidth-(viewport>=700?328:24));
  const max=Math.min(520,available),min=Math.min(252,max);
  return {min,max};
 }

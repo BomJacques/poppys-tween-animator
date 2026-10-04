@@ -22,7 +22,7 @@ export function bindControlCopies(a,el){
  if(typeof MutationObserver!=='undefined'){let queued=false;const observer=new MutationObserver(()=>{if(queued)return;queued=true;queueMicrotask(()=>{queued=false;sync();});});for(const copy of el.querySelectorAll('[data-workspace-control]')){const source=document.getElementById(copy.dataset.workspaceControl);if(source)observer.observe(source,{attributes:true,attributeFilter:['disabled','class','aria-pressed','aria-expanded','aria-label','title'],childList:true,subtree:true});}el.closest('dialog')?.addEventListener('close',()=>observer.disconnect(),{once:true});}
 }
 export const workspaceToolGroups={
- canvas:[['Selection & movement',['multi','precision','snap']],['Drawing & transforms',['uniform-size']],['Canvas view',['fit','zoom-out','zoom-in']],['Onion skin',['onion-skin','onion-count','onion-opacity']]],
+ canvas:[['Selection & drawing',['multi','precision','snap','uniform-size']],['Canvas view',['fit','zoom-out','zoom-in']],['Onion skin',['onion-skin','onion-count','onion-opacity']]],
  blocks:[['Timing',['sequence-tempo']],['Gesture mode',['timeline-touch-mode']],['Active block',['block-selector','edit-block-tracks']],['Block editing',['split-block','trim-block','remove-block']],['Clipboard',['copy-block','paste-block']]],
  keys:[['Timing',['sequence-editor','timeline-units','snap-frames']],['Record & create',['add-key','next-pose','motion-presets']],['Key navigation',['previous-key','next-key']],['Curve editing',['graph-editor','edit-key','easing']],['Clipboard',['copy-keys','paste-keys','delete-keys']],['Timeline view',['timeline-fit','timeline-focus','timeline-minus','timeline-plus']]]
 };
